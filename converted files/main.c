@@ -12,11 +12,12 @@
 #include <time.h>
 #include "main.h"
 #include <math.h>
+#include <stdbool.h>
 
 //constants
 #define STD_STR_LEN 64
 #define DIM 2
-#define N 500
+const int N = 500;
 
 //function prototypes
 int importDataset(char * fname, int N, double ** dataset);
@@ -25,9 +26,9 @@ int main( int argc, char* argv[] )
 {
 	//initialize parameters
 	char fileName[ STD_STR_LEN ];
-	int labelCol = 0, b = 0, minSplit = 0;
+	int b = 0, minSplit = 0;
 	int reportOutput = 0;
-
+	double ** dataset;
 	
 	//make sure there are 5 arguments
   if (argc != 6) {
@@ -59,7 +60,7 @@ int main( int argc, char* argv[] )
 	}	
 
 	//instantiate the specified mapper
-	IDensityStrategy *strategy = malloc(NaiveStrategy()* sizeof(*strategy));
+	IDensityStrategy *strategy = (IDensityStrategy *)malloc(sizeof(IDensityStrategy));
 	if( minSplit > 0) {
 		strategy = TreeStrategy(minSplit);
 		printf("[INFO] Using Tree-based Search");
@@ -76,19 +77,19 @@ int main( int argc, char* argv[] )
       dataset[i]=(double*)malloc(sizeof(double)*DIM);
     }
 
-    int ret=importDataset(inputFname, N, dataset);
+    int ret=importDataset(fileName, N, dataset);
 	
 	//run algorithm and compute runtime
 	clock_t begin = clock();
-	HySortOD hsod = malloc(HySortOD(b, strategy)* sizeof(*hsod));
-	double yPred = hsod_score(dataset);
+	HySortOD hsod = malloc((struct Hypercube*)malloc(sizeof(*hsod)));
+	double yPred = hysortod_score(ret, b, minSplit);
 	clock_t end = clock();
 	double time = (double)(end - begin) / CLOCKS_PER_SEC;
 	printf("runtime: %.8f", time);
 		
 		
 	//calculate the AUC score if possible
-		int yTrue = dataset->getLabels();
+		int *yTrue = getLabels(ret);
 		double auc = AUC_measure(yTrue, yPred );
 		printf("rocauc: %.8f", auc);
 	
@@ -96,15 +97,9 @@ int main( int argc, char* argv[] )
 	if(reportOutput == 1)
 	{
 
-			int yTrue = dataset->getLabels;
+			int *yTrue = getLabels(ret);
 			for(int i = 0; i < yTrue; i++){
 				printf("%d,%.4f", yTrue[i], yPred[i]);
-			}
-		else{
-			for(int i=0; i < yPred; i++)
-			{
-				printf("%.4f",yPred[i]);
-			}
 			}
 		
 	}
@@ -188,7 +183,7 @@ int main( int argc, char* argv[] )
 						parent = current;
 						
 						//goto left of tree
-						if(value < parent->daa)
+						if(value < parent->value)
 						{
 							current = current->leftChild;
 							
@@ -220,7 +215,7 @@ int main( int argc, char* argv[] )
 		}
 
 
-		int get_num_rows(Table * X)
+		int get_num_rows(int * X)
 		{
 			//initialize program
 			int numRows;
@@ -275,15 +270,15 @@ int main( int argc, char* argv[] )
 		return 1 - (density / getMaxDensity(strategy));;	
 	}
 
-	double * hysortod_score(Table * X, int b, int minSplit) {
+	double * hysortod_score(int * X, int b, int minSplit) {
 	   double l = 1 / (double) b;
-	   m = get_num_rows(X);
+	   int *m = get_num_rows(X);
 
 	   Hypercube * H = get_sorted_hypercubes(X);
-	   int * W = get_densities(H, minSplit);
-	   double * scores = get_outlierness_score(H, W, m)
+	   int * W = get_densities(H, l, minSplit);
+	   double * scores = get_outlierness_score(H, W, m);
 
-	   return scores
+	   return scores;
 	}
    Instance *new_Instance( int id, double *values, int label)
    {
@@ -291,10 +286,10 @@ int main( int argc, char* argv[] )
 	   Instance *newNode = (struct Instance*)malloc(sizeof(Instance));
 	   newNode->id = id;
 	   newNode->label = label;
-	   
+	   int i = 0;
 	   
 	   //processing
-	   for(int i = 0; values[i] != NULL; i++)
+	   for(i = 0; values[i] != NULL; i++)
 	   {
 		   //do nothing get size of value
 		   
@@ -331,7 +326,7 @@ int main( int argc, char* argv[] )
    
    int getLabel(Instance *self)
    {
-	   return self->Label;
+	   return self->label;
    }
    
    bool hasLabel(Instance *self)
@@ -344,12 +339,13 @@ int main( int argc, char* argv[] )
 	   //initialize program
 	   int length = 0;
 	   double * values = self->values;
+	   int colIndex = 0, rowIndex = 0;
 	   
 	   //processing
 		//loop through the values of the instance
-	    for(int rowIndex = 0; values[rowIndex][colIndez] != NULL; rowIndex++)
+	    for(rowIndex = 0; values[rowIndex][colIndex] != NULL; rowIndex++)
 		{
-			for(int colIndex = 0; values[rowIndex][colIndez] != NULL; colIndex++)
+			for(colIndex = 0; values[rowIndex][colIndex] != NULL; colIndex++)
 			{
 				//do nothing
 				
@@ -367,13 +363,13 @@ int main( int argc, char* argv[] )
 	IdensityStrategy buildIndex(Hypercube *H)
 	{
 		//initialize pgoram
-		struct *newNode = (struct *H)malloc(sizeof(H));
+		IdensityStrategy *newNode = (struct Hypercube*)malloc(sizeof(H));
 		
 		//processing
 		newNode->Wmax = 0;
 		
 		//return the hypercube
-		retur newNode;
+		return newNode;
 	}
 
 	int *getDensities(Hypercube *H)
@@ -393,7 +389,7 @@ int main( int argc, char* argv[] )
 				{
 					break;
 				}
-				if(isImmdiate(H[i],H[k])
+				if(isImmdiate(H[i],H[k]))
 				{
 					W[i] += getDensity(H[k]);
 				}
@@ -406,7 +402,7 @@ int main( int argc, char* argv[] )
 					W[i] += getDensity(H[k]);
 			}
 			
-			Wmax = max(Wmax,W[i]);
+			int Wmax = max(Wmax,W[i]);
 			
 		}
 		
@@ -414,3 +410,109 @@ int main( int argc, char* argv[] )
 		return W;
 		
 	}
+	
+	//Auc measure function
+double AUC_measure(int * truth, double * probability)
+	{
+		//initialize program
+		int truthLength = 0, probabilityLength = 0;
+		
+		//processing
+			//calculate length of truth
+			while(!(truth[truthLength+1] != 0) || !(truth[truthLength+1] != 1) )
+			{
+				truthLength++;
+			}
+			
+
+			//calculate length of  probability
+			while(!(probability[probabilityLength+1] != 0) || !(probability[probabilityLength+1] != 1) )
+			{
+				probabilityLength++;
+			}
+			
+			printf("%d,%d,",truthLength,probabilityLength);
+			//check if they are the same length
+			if(probabilityLength != truthLength)
+			{
+				//exit and print error message
+				printf("Vector sizes dont match");
+				exit(0);
+			}
+			
+			//otherwise continue
+			double pos = 0.0;
+			double neg = 0.0;
+			
+        for (int i = 0; i < truthLength; i++) {
+            if (truth[i] == 0) {
+                neg++;
+            } else if (truth[i] == 1) {
+                pos++;
+            } else {
+                printf("AUC is only for binary classification. Invalid label");
+				exit(1);
+            }
+        }
+
+		//get new table copies
+		int *label = truth;
+		double *prediction = probability;
+		
+		double rank[truthLength];
+		for (int i = 0; i < probabilityLength; i++) {
+            if (i == probabilityLength - 1 || prediction[i] != prediction[i+1]) {
+                rank[i] = i + 1;
+            } else {
+                int j = i + 1;
+                for (; j < probabilityLength && prediction[j] == prediction[i]; j++);
+                double r = (i + 1 + j) / 2.0;
+                for (int k = i; k < j; k++) rank[k] = r;
+                i = j - 1;
+            }
+        }
+		
+		//calculate auc
+		double auc = 0.0;
+        for (int i = 0; i < truthLength; i++) {
+            if (label[i] == 1)
+                auc += rank[i];
+        }
+
+        auc = (auc - (pos * (pos+1) / 2.0)) / (pos * neg);
+        return auc;
+		
+	}
+
+
+//abstract density strategy functions
+
+double getMaxDensity(Hypercube *self)
+{
+	return self->Wmax;
+}
+
+bool isImmediate(Hypercube hi, Hypercube hk)
+{
+	int *p = getCoords(hi);
+	
+	int *q = getCoords(hk);
+	
+	int p_size = sizeof(p)/sizeof(*p);
+	
+	for(int j = p_size - 1; j >= 0; j++)
+	{
+		if(abs(p[j] - q[j]) > 1)
+		{
+			return false;
+		}
+	}
+	return true;
+}
+
+
+bool isProspective(Hypercube hi, Hypercube hk, int col)
+{
+	return (abs(getCoordAt(hi,col) - getCoordAt(hk,col)) <= 1);
+}
+
