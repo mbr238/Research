@@ -3,6 +3,7 @@
 
 //header files of create_hypercubes, construct, and neighborhood density
 #include "hypercube.h"
+#include "neighbor.h"
 
 const int N = 515900;
 const int DIM = 2;
@@ -15,18 +16,11 @@ double myScore(double density, double densityMax)
 	return (1 - (density/densityMax));
 }
 
-															//fix with binary tree root
-double neighborhood_density(Hypercube *array, Hypercube *H, Hypercube *root, int position, int dimension)
-{
-	
-	return 0.0; // temp stub routine
-} // comes from alg 3 when constructed
-
 												//fix with binary tree root
-void construct( Hypercube *array, int minSplit, Hypercube *root, int constant)
-{
-	printf("Constructing\n");
-} //comes from alg 2 when constructed
+//void construct( Hypercube *array, int minSplit, Hypercube *root, int constant)
+//{
+//	printf("Constructing\n");
+//} //comes from alg 2 when constructed
 
 
 double max(double W[][b], int b)
@@ -40,6 +34,7 @@ double max(double W[][b], int b)
 			if(W[i][j] > max)
 			{
 				max = W[i][j];
+				
 			}
 		}
 	}
@@ -55,8 +50,7 @@ void HYsortOD(int bins, int minSplit, double **outlierArray, double **dataset, d
 {
 	//initialize program
 	double values[2];
-	Hypercube *array[b][b];
-	int position = 0;
+	Hypercube* array[b][b];
 	
 	//initialize array to null initially
  	for(int i = 0; i < b; i++)
@@ -64,6 +58,7 @@ void HYsortOD(int bins, int minSplit, double **outlierArray, double **dataset, d
 		for(int j = 0; j < b; j++)
 		{
 		array[i][j] = NULL;
+		
 		}
 		
 	}
@@ -75,14 +70,24 @@ void HYsortOD(int bins, int minSplit, double **outlierArray, double **dataset, d
 					values[0] = dataset[i][0];
 					values[1] = dataset[i][1];
 					create_Hypercubes( values, length, array);	
-			}	
+			}		
+		
 		
 		//construct the binary tree with hypercubes
-			Hypercube* root = NULL; // replace this when alg 2 is constructed
-			construct( array, minSplit, root, 1); // returns the binary tree containing hypercubes
+			//Hypercube* root = NULL; // replace this when alg 2 is constructed
+			//construct( array, minSplit, root, 1); // returns the binary tree containing hypercubes
 	
 		//create an empty density array W
 		double W[b][b];
+	
+		for(int i = 0; i < b; i++)
+		{
+			for(int j = 0; j < b; j++)
+			{
+				W[i][j] = 0.0;
+			}
+		}
+		
 				
 		//iterate through the hypercube array for each hypercube
 		for(int i = 0; i < b; i++)
@@ -93,14 +98,13 @@ void HYsortOD(int bins, int minSplit, double **outlierArray, double **dataset, d
 				{
 					//calculate neighborhood density
 					double density = 2;
-					density = neighborhood_density(array, array[i][j], root, position, 1);
+					density = neighborhood_density(array, array[i][j]);
 					
 					//insert that density into the density  array	
 					W[i][j] = density;
 					
 				}
-			
-			
+		
 			}
 			
 		}
@@ -117,7 +121,7 @@ void HYsortOD(int bins, int minSplit, double **outlierArray, double **dataset, d
 				//calculate the score for that datapoint within hypercubes
 				double result;
 				result = myScore(W[index][j], Wmax);
-				
+	
 				//insert that score into the outlier array
 				outlierArray[index][j] = result;
 				}
