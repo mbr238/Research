@@ -7,7 +7,7 @@ void HYsortOD(int bins, int minSplit, double **outlierArray, double **dataset, d
 double myScore(double density, double densityMax);
 
 															//fix with binary tree root
-double neighborhood_density(Hypercube *array, int countings, Hypercube* root, int index, int constant);
+double neighborhood_density(Hypercube *array, int countings, Hypercube *root, int position, int dimension);
 
 												//fix with binary tree root
 void construct( Hypercube *array, int minSplit, Hypercube* root, int constant);
@@ -22,9 +22,6 @@ int main()
 	int minSplit = 5;
 	double **outlierArray;
 	double **dataset;
-	double length = 0.20;
-    int N = 515900;
-    int DIM = 2;	
     char inputFname[500] = "file.txt";	
 
 	
