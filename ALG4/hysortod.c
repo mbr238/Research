@@ -6,15 +6,11 @@ void HYsortOD(int bins, int minSplit, double **outlierArray, double **dataset, d
 
 double myScore(double density, double densityMax);
 
-															//fix with binary tree root
-double neighborhood_density(Hypercube *array, Hypercube *H, Hypercube *root, int position, int dimension);
-
+double neighborhood_density(Hypercube* array[][b], Hypercube *H);
 												//fix with binary tree root
 void construct( Hypercube *array, int minSplit, Hypercube* root, int constant);
 
-
 double max(double W[][b], int b);
-
 
 int main()
 {
@@ -43,6 +39,15 @@ int main()
 	
 	
 	HYsortOD(bins, minSplit, outlierArray, dataset, length);
+	
+	for(int i = 0; i < b;i++)
+	{
+		for(int j = 0; j < b; j++)
+		{
+			printf("%lf,%lf\n",outlierArray[i][0],outlierArray[i][1]);
+			
+		}
+	}
 	
 	
 	printf("Complete");
