@@ -12,21 +12,21 @@ const double length = 0.20; // this is 1/b
 double myScore(double density, double densityMax)
 {
 	//return the score
-	return 1 - (density/densityMax);
+	return (1 - (density/densityMax));
 }
 
 															//fix with binary tree root
-double neighborhood_density(Hypercube *array, int countings, Hypercube *root, int position, int dimension)
+double neighborhood_density(Hypercube *array, Hypercube *H, Hypercube *root, int position, int dimension)
 {
 	
 	return 0.0; // temp stub routine
-}
+} // comes from alg 3 when constructed
 
 												//fix with binary tree root
 void construct( Hypercube *array, int minSplit, Hypercube *root, int constant)
 {
 	printf("Constructing\n");
-}
+} //comes from alg 2 when constructed
 
 
 double max(double W[][b], int b)
@@ -78,8 +78,8 @@ void HYsortOD(int bins, int minSplit, double **outlierArray, double **dataset, d
 			}	
 		
 		//construct the binary tree with hypercubes
-			Hypercube* root = NULL;
-			construct( array, minSplit, root, 1);
+			Hypercube* root = NULL; // replace this when alg 2 is constructed
+			construct( array, minSplit, root, 1); // returns the binary tree containing hypercubes
 	
 		//create an empty density array W
 		double W[b][b];
@@ -93,7 +93,7 @@ void HYsortOD(int bins, int minSplit, double **outlierArray, double **dataset, d
 				{
 					//calculate neighborhood density
 					double density = 2;
-					density = neighborhood_density(array, array[i][j]->countings, root, position, 1);
+					density = neighborhood_density(array, array[i][j], root, position, 1);
 					
 					//insert that density into the density  array	
 					W[i][j] = density;
