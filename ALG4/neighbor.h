@@ -1,12 +1,12 @@
 #ifndef NEIGHBOR_H
 #define NEIGHBOR_H
-
+#include <time.h>
 #include <stdbool.h>
 #include <math.h>
 
 bool isImmediate(Hypercube *H, Hypercube *F)
 {
-	if( abs(H->x_coords - F->x_coords > 1) || abs(H->y_coords - F->y_coords > 1))
+	if( abs(H->x_coords - F->x_coords) > 1 || abs(H->y_coords - F->y_coords) > 1)
 	{
 		return false;
 	}
@@ -38,16 +38,17 @@ double neighborhood_density(Hypercube* array[][b], Hypercube *H)
 				if(array[k][j] != NULL)
 				{
 					//check if the hypercubes are immediate
-					if(	isImmediate(H, array[k][j]))
+					if(	isImmediate(H, array[k][j]) && array[k][j] != H)
 					{
 						//if they are then add that cubes contings to the original density
 						density = density + array[k][j]->countings;
-						
 					}				
 					//end if loop
+					
 				}
 				}
 			}
+
 			//end for loop
 	//return the neighborhood density
 	return density;
