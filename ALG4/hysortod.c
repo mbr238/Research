@@ -14,6 +14,7 @@ double max(double W[][b], int b);
 
 int main()
 {
+	//initialize variables/datasets
 	int bins = 5;
 	int minSplit = 100;
 	double outlierArray[b][b];
@@ -28,6 +29,7 @@ int main()
 		dataset[i]=(double*)malloc(sizeof(double)*DIM);
 		}	
 		
+		//set the outlier array originally to 0s 
 		for(int i = 0; i < b; i++)
 		{
 			for(int j = 0; j < b; j++)
@@ -35,19 +37,28 @@ int main()
 				outlierArray[i][j] = 0.0;
 			}
 		}
-	
+		
+	//import the data set
 	importDataset(inputFname, N, dataset);	
 		
+	//perform outlier algorithm
 	HYsortOD(bins, minSplit, outlierArray, dataset, length);
 	
+	//iterate through the outlier array
 	for(int i = 0; i < b;i++)
 	{
 		for(int j = 0; j < b; j++)
 		{
-			printf(" position: [%d,%d]: %lf\n",i,j,outlierArray[i][j]);
+			//if the outlier array spot is not equal to 0( aka not initialized)
+			if(outlierArray[i][j] != 0)
+			{
+			//print out the outlier score to that hypercube
+			printf(" position: [%d,%d]: Outlier Score: %lf\n",i,j,outlierArray[i][j]);
+			//goto next row once j is 4
 			if(j == 4)
 			{
 				printf("Next row\n");
+			}
 			}
 		}
 	}
