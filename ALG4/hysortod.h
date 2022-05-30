@@ -77,6 +77,7 @@ void HYsortOD(int bins, int minSplit, double outlierArray[][b], double **dataset
 		//create an empty density array W
 		double W[b][b];
 	
+		//initialize the density arrayss to 0s
 		for(int i = 0; i < b; i++)
 		{
 			for(int j = 0; j < b; j++)
@@ -91,6 +92,7 @@ void HYsortOD(int bins, int minSplit, double outlierArray[][b], double **dataset
 		{
 			for(int j = 0; j < b; j++)
 			{
+				//if the hypercube is initialized
 				if(array[i][j] != NULL)
 				{
 					//calculate neighborhood density
@@ -100,8 +102,10 @@ void HYsortOD(int bins, int minSplit, double outlierArray[][b], double **dataset
 					W[i][j] = density;
 					
 				}
+				//otherwise it is not initialized
 				else
 				{
+					//set the spot to 0 for not initialized
 					W[i][j] = 0.0;
 				}
 		
@@ -110,9 +114,10 @@ void HYsortOD(int bins, int minSplit, double outlierArray[][b], double **dataset
 		}
 
 		//end for
+		
+		//start the timer
 		clock_t start, end;
 		double cpu_time_used;
-			
 		start = clock();
 		
 		//calclate the largest density value
@@ -123,6 +128,7 @@ void HYsortOD(int bins, int minSplit, double outlierArray[][b], double **dataset
 			{
 				for(int j = 0; j < b; j++)
 				{
+				//if the hypercube is initialized
 				if(array[index][j] != NULL)
 				{
 				//calculate the score for that datapoint within hypercubes
@@ -131,17 +137,21 @@ void HYsortOD(int bins, int minSplit, double outlierArray[][b], double **dataset
 				//insert that score into the outlier array
 				outlierArray[index][j] = result;
 				}
+				//otherwise hypercube is not initialized
 				else
 				{
+				//set the spot in outlier array to 0 for not initialized
 				outlierArray[index][j] = 0.0;
 				}
 				}
 			}
 		//end for
-			
+		//end timer
 		end = clock();
 		cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
-		printf("Time used : %f\n", cpu_time_used);			
+		//print how long it took to calculate outliers
+		printf("Time used : %f\n", cpu_time_used);		
+		
 		//end program
 }
 
