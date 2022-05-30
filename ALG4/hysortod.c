@@ -2,7 +2,7 @@
 
 
 
-void HYsortOD(int bins, int minSplit, double **outlierArray, double **dataset, double length);
+void HYsortOD(int bins, int minSplit, double outlierArray[][b], double **dataset, double length);
 
 double myScore(double density, double densityMax);
 
@@ -16,7 +16,7 @@ int main()
 {
 	int bins = 5;
 	int minSplit = 100;
-	double **outlierArray;
+	double outlierArray[b][b];
 	double **dataset;
     char inputFname[500] = "file.txt";	
 
@@ -27,28 +27,33 @@ int main()
 		{
 		dataset[i]=(double*)malloc(sizeof(double)*DIM);
 		}	
-	
-	 //allocate memory for dataset
-		outlierArray=(double**)malloc(sizeof(double*)*N);
-		for (int i=0; i<N; i++)
+		
+		for(int i = 0; i < b; i++)
 		{
-		  outlierArray[i]=(double*)malloc(sizeof(double)*DIM);
+			for(int j = 0; j < b; j++)
+			{
+				outlierArray[i][j] = 0.0;
+			}
 		}
 	
 	importDataset(inputFname, N, dataset);	
-	
-	
+		
 	HYsortOD(bins, minSplit, outlierArray, dataset, length);
 	
 	for(int i = 0; i < b;i++)
 	{
 		for(int j = 0; j < b; j++)
 		{
-			printf("%lf,%lf\n",outlierArray[i][0],outlierArray[i][1]);
-			
+			printf(" position: [%d,%d]: %lf\n",i,j,outlierArray[i][j]);
+			if(j == 4)
+			{
+				printf("Next row\n");
+			}
 		}
 	}
 	
+	
+
 	
 	printf("Complete");
 	return 0;
