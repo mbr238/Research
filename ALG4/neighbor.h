@@ -4,6 +4,7 @@
 #include <stdbool.h>
 #include <math.h>
 
+//function to calculate neighboring hypercubes
 bool isImmediate(Hypercube *H, Hypercube *F)
 {
 	if( abs(H->x_coords - F->x_coords) <= 1 && abs(H->y_coords - F->y_coords) <= 1)
@@ -13,12 +14,6 @@ bool isImmediate(Hypercube *H, Hypercube *F)
 
 	return false; // they are not neighbors
 }
-
-bool isProspective(Hypercube *H, Hypercube *F)
-{
-	return abs(H->y_coords - F->y_coords ) <= 1;
-}
-
 
 
 double neighborhood_density(Hypercube* array[][b], Hypercube *H)
