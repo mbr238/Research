@@ -6,12 +6,12 @@
 
 bool isImmediate(Hypercube *H, Hypercube *F)
 {
-	if( abs(H->x_coords - F->x_coords) > 1 || abs(H->y_coords - F->y_coords) > 1)
+	if( abs(H->x_coords - F->x_coords) <= 1 && abs(H->y_coords - F->y_coords) <= 1)
 	{
-		return false;
+		return true;
 	}
 
-	return true; // they are neighbors
+	return false; // they are not neighbors
 }
 
 bool isProspective(Hypercube *H, Hypercube *F)
@@ -42,6 +42,7 @@ double neighborhood_density(Hypercube* array[][b], Hypercube *H)
 					{
 						//if they are then add that cubes contings to the original density
 						density = density + array[k][j]->countings;
+						
 					}				
 					//end if loop
 					
