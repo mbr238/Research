@@ -5,7 +5,7 @@
 #include "hypercube.h"
 #include "neighbor.h"
 
-const int N = 515900;
+const int N = 5159739;
 const int DIM = 2;
 const double length = 0.20; // this is 1/b	
 
@@ -13,7 +13,7 @@ const double length = 0.20; // this is 1/b
 double myScore(double density, double densityMax)
 {
 	//return the score
-	return (1 - (density/densityMax));
+	return (1.000000 - (density/densityMax));
 }
 
 												//fix with binary tree root
@@ -46,11 +46,13 @@ double max(double W[][b], int b)
 //hysortod function retruns an array of outlierness in parameters
 	
 											//same size as dataset -- outlierarray
-void HYsortOD(int bins, int minSplit, double **outlierArray, double **dataset, double length)
+void HYsortOD(int bins, int minSplit, double outlierArray[][b], double **dataset, double length)
 {
 	//initialize program
 	double values[2];
 	Hypercube* array[b][b];
+	double result;	
+	double density;	
 	
 	//initialize array to null initially
  	for(int i = 0; i < b; i++)
@@ -72,11 +74,6 @@ void HYsortOD(int bins, int minSplit, double **outlierArray, double **dataset, d
 					create_Hypercubes( values, length, array);	
 			}		
 		
-		
-		//construct the binary tree with hypercubes
-			//Hypercube* root = NULL; // replace this when alg 2 is constructed
-			//construct( array, minSplit, root, 1); // returns the binary tree containing hypercubes
-	
 		//create an empty density array W
 		double W[b][b];
 	
@@ -88,7 +85,7 @@ void HYsortOD(int bins, int minSplit, double **outlierArray, double **dataset, d
 			}
 		}
 		
-				
+		
 		//iterate through the hypercube array for each hypercube
 		for(int i = 0; i < b; i++)
 		{
@@ -97,18 +94,26 @@ void HYsortOD(int bins, int minSplit, double **outlierArray, double **dataset, d
 				if(array[i][j] != NULL)
 				{
 					//calculate neighborhood density
-					double density = 2;
 					density = neighborhood_density(array, array[i][j]);
 					
 					//insert that density into the density  array	
 					W[i][j] = density;
 					
 				}
+				else
+				{
+					W[i][j] = 0.0;
+				}
 		
 			}
 			
 		}
+
 		//end for
+		clock_t start, end;
+		double cpu_time_used;
+			
+		start = clock();
 		
 		//calclate the largest density value
 		double Wmax = max(W, b);
@@ -118,16 +123,25 @@ void HYsortOD(int bins, int minSplit, double **outlierArray, double **dataset, d
 			{
 				for(int j = 0; j < b; j++)
 				{
+				if(array[index][j] != NULL)
+				{
 				//calculate the score for that datapoint within hypercubes
-				double result;
 				result = myScore(W[index][j], Wmax);
-	
+				
 				//insert that score into the outlier array
 				outlierArray[index][j] = result;
 				}
+				else
+				{
+				outlierArray[index][j] = 0.0;
+				}
+				}
 			}
 		//end for
-		
+			
+		end = clock();
+		cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
+		printf("Time used : %f\n", cpu_time_used);			
 		//end program
 }
 
