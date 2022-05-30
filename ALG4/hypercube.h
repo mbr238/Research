@@ -10,51 +10,14 @@
 //#include "ArrayLists.h"
 const int b = 5;
 
+
+//data structure
 typedef struct Hypercube{
 	int x_coords;
 	int y_coords;
 	double array[15][15];
 	int countings;
 }Hypercube;
-
-
-int getXCoords(Hypercube *H)
-{
-	return H->x_coords;
-}
-
-int getYCoords(Hypercube *H)
-{
-	return H->y_coords;
-}
-
-int compare_Cubes(Hypercube *H, Hypercube *C)
-{
-	//initialize variables
-	int xCoordsFirstCube = 0, yCoordsFirstCube = 0;
-	int xCoordsSecondCube = 0, yCoordsSecondCube = 0;
-	
-	//processing
-		//get the coordinants of both hypercubes
-		xCoordsFirstCube = getXCoords( H );
-		yCoordsFirstCube = getYCoords( H );
-		xCoordsSecondCube = getXCoords( C );
-		yCoordsSecondCube = getYCoords( C );
-		
-		//see if the second cube is within 1  distance of the second cube
-		if( xCoordsFirstCube - xCoordsSecondCube != 0)
-		{
-			return (xCoordsFirstCube - xCoordsSecondCube);
-		}
-		if( yCoordsFirstCube - yCoordsSecondCube != 0)
-		{
-			return (yCoordsFirstCube - yCoordsSecondCube);
-		}
-	
-	
-	//return that they are not zero
-	return 0;
-}
 
 
 
@@ -67,37 +30,42 @@ void create_Hypercubes(double *values, const double length, Hypercube *array[][b
 		newCube->countings = 0;
 		
 	//processing	
+		//check if the dataset we are working with is not negative numbers
 		if(values[0] > 0 && values[1] > 0)
 		{
 		//check if the values are above the allowed limit
 		if(correctValOne > 5)
-		{
-			//adjust the points within the domain
-			correctValOne = values[0] * length / 20;			
-		}
-		if( correctValTwo > 5)
-		{	
-			correctValTwo = values[1] * length / 20;
-		}
-		//check to see if hypercube is uninitialized aka equal to null
-		if(array[(int)floor(correctValOne)][(int)floor(correctValTwo)] == NULL)
-		{
-		//add the values to the hypercube
-		newCube->x_coords = correctValOne;
-		newCube->y_coords = correctValTwo;
-		newCube->countings++;
-		//throw cube in array list
-		array[(int)floor(newCube->x_coords)][(int)floor(newCube->y_coords)] = newCube;
-		}
-		//otherwise hypercube initialized
-		else
-		{
-		//store the new data point within the hypercube array for each instance
-		array[(int)floor(correctValOne)][(int)floor(correctValTwo)]->array[(int)floor(correctValOne)][(int)floor(correctValTwo)] = values[0];
-		array[(int)floor(correctValOne)][(int)floor(correctValTwo)]->array[(int)floor(correctValOne)][(int)floor(correctValTwo+1)] = values[1];	
-		array[(int)floor(correctValOne)][(int)floor(correctValTwo)]->countings++;
-		free(newCube);
-		}
+			{
+				//adjust the points within the domain
+				correctValOne = values[0] * length / 20;			
+			}
+			
+			if( correctValTwo > 5)
+				{	
+					correctValTwo = values[1] * length / 20;
+				}
+			
+			//check to see if hypercube is uninitialized aka equal to null
+			if(array[(int)floor(correctValOne)][(int)floor(correctValTwo)] == NULL)
+				{
+				//add the values to the hypercube
+				newCube->x_coords = correctValOne;
+				newCube->y_coords = correctValTwo;
+				newCube->countings++;
+				
+				//throw cube in array list
+				array[(int)floor(newCube->x_coords)][(int)floor(newCube->y_coords)] = newCube;
+				
+				}
+			//otherwise hypercube initialized
+			else
+				{
+				//store the new data point within the hypercube array for each instance
+				array[(int)floor(correctValOne)][(int)floor(correctValTwo)]->array[(int)floor(correctValOne)][(int)floor(correctValTwo)] = values[0];
+				array[(int)floor(correctValOne)][(int)floor(correctValTwo)]->array[(int)floor(correctValOne)][(int)floor(correctValTwo+1)] = values[1];	
+				array[(int)floor(correctValOne)][(int)floor(correctValTwo)]->countings++;
+				free(newCube);
+				}
 		}
 	//void function
 	
