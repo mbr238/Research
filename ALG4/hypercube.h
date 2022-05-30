@@ -13,7 +13,7 @@ const int b = 5;
 typedef struct Hypercube{
 	int x_coords;
 	int y_coords;
-	double array[5][5];
+	double array[15][15];
 	int countings;
 }Hypercube;
 
@@ -63,22 +63,25 @@ void create_Hypercubes(double *values, const double length, Hypercube *array[][b
 	//initialize variables
 		//create a new hypercube based off of values
 		Hypercube *newCube = malloc(sizeof(Hypercube));
-		double correctValOne = 0, correctValTwo = 0;
+		double correctValOne = values[0], correctValTwo = values[1];
 		newCube->countings = 0;
 		
-	//processing
+	//processing	
+		if(values[0] > 0 && values[1] > 0)
+		{
 		//check if the values are above the allowed limit
-		if(values[0] > 5 && values[1] > 5)
+		if(correctValOne > 5)
 		{
 			//adjust the points within the domain
-			correctValOne = values[0] * length / 20;
-			
+			correctValOne = values[0] * length / 20;			
+		}
+		if( correctValTwo > 5)
+		{	
 			correctValTwo = values[1] * length / 20;
 		}
 		//check to see if hypercube is uninitialized aka equal to null
-		if(array[(int)correctValOne][(int)correctValTwo] == NULL)
+		if(array[(int)floor(correctValOne)][(int)floor(correctValTwo)] == NULL)
 		{
-		
 		//add the values to the hypercube
 		newCube->x_coords = correctValOne;
 		newCube->y_coords = correctValTwo;
@@ -90,11 +93,14 @@ void create_Hypercubes(double *values, const double length, Hypercube *array[][b
 		else
 		{
 		//store the new data point within the hypercube array for each instance
-		array[(int)correctValOne][(int)correctValTwo]->array[(int)correctValOne][(int)correctValTwo] = correctValOne;
-		array[(int)correctValOne][(int)correctValTwo]->array[(int)correctValOne][(int)correctValTwo+1] = correctValTwo;	
-		array[(int)correctValOne][(int)correctValTwo]->countings++;
+		array[(int)floor(correctValOne)][(int)floor(correctValTwo)]->array[(int)floor(correctValOne)][(int)floor(correctValTwo)] = values[0];
+		array[(int)floor(correctValOne)][(int)floor(correctValTwo)]->array[(int)floor(correctValOne)][(int)floor(correctValTwo+1)] = values[1];	
+		array[(int)floor(correctValOne)][(int)floor(correctValTwo)]->countings++;
+		free(newCube);
+		}
 		}
 	//void function
+	
 }
 	
 
