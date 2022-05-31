@@ -4,11 +4,11 @@
 //header files of create_hypercubes, construct, and neighborhood density
 #include "hypercube.h"
 #include "neighbor.h"
-
+#include "params.h"
 
 
 //prototypes
-double myScore(double density, double densityMax)
+DTYPE myScore(DTYPE density, DTYPE densityMax)
 {
 	//return the score
 	return (1.000000 - (density/densityMax));
@@ -21,9 +21,9 @@ double myScore(double density, double densityMax)
 //} //comes from alg 2 when constructed
 
 
-double max(double W[][b], int b)
+DTYPE max(DTYPE W[][b], int b)
 {
-	double max = W[0][0];
+	DTYPE max = W[0][0];
 	
 	for(int i = 0; i < b; i++)
 	{
@@ -44,13 +44,13 @@ double max(double W[][b], int b)
 //hysortod function retruns an array of outlierness in parameters
 	
 											//same size as dataset -- outlierarray
-void HYsortOD(int bins, int minSplit, double outlierArray[][b], double **dataset, double length)
+void HYsortOD(int bins, int minSplit, DTYPE outlierArray[][b], DTYPE **dataset, DTYPE length)
 {
 	//initialize program
-	double values[DIM];
+	DTYPE values[DIM];
 	Hypercube* array[b][b];
-	double result;	
-	double density;	
+	DTYPE result;	
+	DTYPE density;	
 	
 	//initialize array to null initially
  	for(int i = 0; i < b; i++)
@@ -76,7 +76,7 @@ void HYsortOD(int bins, int minSplit, double outlierArray[][b], double **dataset
 		//probably dont need since the array has them next to eachother based on points anyways
 		
 		//create an empty density array W
-		double W[b][b];
+		DTYPE W[b][b];
 	
 		//initialize the density arrayss to 0s
 		for(int i = 0; i < b; i++)
@@ -112,7 +112,7 @@ void HYsortOD(int bins, int minSplit, double outlierArray[][b], double **dataset
 		//end for
 	
 		//calclate the largest density value
-		double Wmax = max(W, b);
+		DTYPE Wmax = max(W, b);
 		
 		//for reach datapoint within the dataset
 			for(int index = 0; index < b; index++)
