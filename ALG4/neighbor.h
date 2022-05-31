@@ -7,7 +7,7 @@
 //function to calculate neighboring hypercubes
 bool isImmediate(Hypercube *H, Hypercube *F)
 {
-	if( abs(H->x_coords - F->x_coords) <= 1 && abs(H->y_coords - F->y_coords) <= 1)
+	if( abs(H->coords[0] - F->coords[0]) <= 1 && abs(H->coords[1] - F->coords[1]) <= 1)
 	{
 		return true;
 	}
