@@ -9,12 +9,12 @@
 
 //#include "ArrayLists.h"
 const int b = 5;
-
+#define DIM 2 //define the dimensions this program will be in
+const int N = 5159746; // how long the file is for dataset importing
 
 //data structure
 typedef struct Hypercube{
-	int x_coords;
-	int y_coords;
+	int coords[DIM];
 	int countings;
 	
 }Hypercube;
@@ -49,12 +49,12 @@ void create_Hypercubes(double *values, const double length, Hypercube *array[][b
 			if(array[(int)floor(correctValOne)][(int)floor(correctValTwo)] == NULL)
 				{
 				//add the values to the hypercube
-				newCube->x_coords = correctValOne;
-				newCube->y_coords = correctValTwo;
+				newCube->coords[0] = correctValOne;
+				newCube->coords[1] = correctValTwo;
 				newCube->countings++;
 				
 				//throw cube in array list
-				array[(int)floor(newCube->x_coords)][(int)floor(newCube->y_coords)] = newCube;
+				array[(int)floor(newCube->coords[0])][(int)floor(newCube->coords[1])] = newCube;
 				
 				}
 			//otherwise hypercube initialized
