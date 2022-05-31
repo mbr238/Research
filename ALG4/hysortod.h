@@ -5,8 +5,7 @@
 #include "hypercube.h"
 #include "neighbor.h"
 
-const int N = 5159739;
-const int DIM = 2;	
+
 
 //prototypes
 double myScore(double density, double densityMax)
@@ -48,7 +47,7 @@ double max(double W[][b], int b)
 void HYsortOD(int bins, int minSplit, double outlierArray[][b], double **dataset, double length)
 {
 	//initialize program
-	double values[2];
+	double values[DIM];
 	Hypercube* array[b][b];
 	double result;	
 	double density;	
