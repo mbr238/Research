@@ -15,13 +15,13 @@ const int b = 5;
 typedef struct Hypercube{
 	int x_coords;
 	int y_coords;
-	double array[15][15];
 	int countings;
+	
 }Hypercube;
 
 
 
-void create_Hypercubes(double *values, const double length, Hypercube *array[][b])
+void create_Hypercubes(double *values, const double length, Hypercube *array[][b], int b)
 {
 	//initialize variables
 		//create a new hypercube based off of values
@@ -34,13 +34,13 @@ void create_Hypercubes(double *values, const double length, Hypercube *array[][b
 		if(values[0] > 0 && values[1] > 0)
 		{
 		//check if the values are above the allowed limit
-		if(correctValOne > 5)
+		if(correctValOne > b)
 			{
 				//adjust the points within the domain
 				correctValOne = values[0] * length / 20;			
 			}
 			
-			if( correctValTwo > 5)
+			if( correctValTwo > b)
 				{	
 					correctValTwo = values[1] * length / 20;
 				}
@@ -61,8 +61,6 @@ void create_Hypercubes(double *values, const double length, Hypercube *array[][b
 			else
 				{
 				//store the new data point within the hypercube array for each instance
-				array[(int)floor(correctValOne)][(int)floor(correctValTwo)]->array[(int)floor(correctValOne)][(int)floor(correctValTwo)] = values[0];
-				array[(int)floor(correctValOne)][(int)floor(correctValTwo)]->array[(int)floor(correctValOne)][(int)floor(correctValTwo+1)] = values[1];	
 				array[(int)floor(correctValOne)][(int)floor(correctValTwo)]->countings++;
 				free(newCube);
 				}
