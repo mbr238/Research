@@ -2,7 +2,7 @@
 #define NEIGHBOR_H
 #include <time.h>
 #include <stdbool.h>
-#include <math.h>
+
 
 //function to calculate neighboring hypercubes
 bool isImmediate(Hypercube *H, Hypercube *F)
@@ -33,7 +33,7 @@ double neighborhood_density(Hypercube* array[][b], Hypercube *H)
 				if(array[k][j] != NULL)
 				{
 					//check if the hypercubes are immediate
-					if(	isImmediate(H, array[k][j]) && array[k][j] != H)
+					if( array[k][j] != H && isImmediate(H, array[k][j]))
 					{
 						//if they are then add that cubes contings to the original density
 						density = density + array[k][j]->countings;
