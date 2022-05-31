@@ -6,8 +6,7 @@
 #include "neighbor.h"
 
 const int N = 5159739;
-const int DIM = 2;
-const double length = 0.20; // this is 1/b	
+const int DIM = 2;	
 
 //prototypes
 double myScore(double density, double densityMax)
@@ -60,7 +59,6 @@ void HYsortOD(int bins, int minSplit, double outlierArray[][b], double **dataset
 		for(int j = 0; j < b; j++)
 		{
 		array[i][j] = NULL;
-		
 		}
 		
 	}
@@ -71,8 +69,12 @@ void HYsortOD(int bins, int minSplit, double outlierArray[][b], double **dataset
 			{
 					values[0] = dataset[i][0];
 					values[1] = dataset[i][1];
-					create_Hypercubes( values, length, array);	
+					create_Hypercubes( values, length, array, bins);	
 			}		
+		
+		
+		//sort the hypercubes
+		//probably dont need since the array has them next to eachother based on points anyways
 		
 		//create an empty density array W
 		double W[b][b];
@@ -103,23 +105,13 @@ void HYsortOD(int bins, int minSplit, double outlierArray[][b], double **dataset
 					
 				}
 				//otherwise it is not initialized
-				else
-				{
-					//set the spot to 0 for not initialized
-					W[i][j] = 0.0;
-				}
 		
 			}
 			
 		}
 
 		//end for
-		
-		//start the timer
-		clock_t start, end;
-		double cpu_time_used;
-		start = clock();
-		
+	
 		//calclate the largest density value
 		double Wmax = max(W, b);
 		
@@ -146,12 +138,7 @@ void HYsortOD(int bins, int minSplit, double outlierArray[][b], double **dataset
 				}
 			}
 		//end for
-		//end timer
-		end = clock();
-		cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
-		//print how long it took to calculate outliers
-		printf("Time used : %f\n", cpu_time_used);		
-		
+
 		//end program
 }
 
