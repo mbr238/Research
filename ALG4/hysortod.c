@@ -1,24 +1,24 @@
 //header files
 #include "hysortod.h"
-
+#include "params.h"
 
 //global constants
 
 
 //prototypes
-void HYsortOD(int bins, int minSplit, double outlierArray[][b], double **dataset, double length);
+void HYsortOD(int bins, int minSplit, DTYPE outlierArray[][b], DTYPE **dataset, DTYPE length);
 
-double myScore(double density, double densityMax);
+DTYPE myScore(DTYPE density, DTYPE densityMax);
 
-double neighborhood_density(Hypercube* array[][b], Hypercube *H);
+DTYPE neighborhood_density(Hypercube* array[][b], Hypercube *H);
 												//fix with binary tree root
 void construct( Hypercube *array, int minSplit, Hypercube* root, int constant);
 
-double max(double W[][b], int b);
+DTYPE max(DTYPE W[][b], int b);
 
-double getMax(double **dataset);
+DTYPE getMax(DTYPE **dataset);
 
-double getMin(double **dataset);
+DTYPE getMin(DTYPE **dataset);
 
 
 int main()
@@ -26,17 +26,17 @@ int main()
 	//initialize variables/datasets
 	int bins = 5;
 	int minSplit = 100;
-	double outlierArray[b][b];
-	double **dataset;
+	DTYPE outlierArray[b][b];
+	DTYPE **dataset;
     char inputFname[500] = "file.txt";	
-	double length = 1.0/b;
-	double max = 0, min = 0;
+	DTYPE length = 1.0/b;
+	DTYPE max = 0, min = 0;
 	
 	//allocate memory for dataset
-		dataset=(double**)malloc(sizeof(double*)*N);
+		dataset=(DTYPE**)malloc(sizeof(DTYPE*)*N);
 		for (int i=0; i<N; i++)
 		{
-		dataset[i]=(double*)malloc(sizeof(double)*DIM);
+		dataset[i]=(DTYPE*)malloc(sizeof(DTYPE)*DIM);
 		}	
 		
 		
@@ -60,7 +60,7 @@ int main()
 	
 	//start the timer
 	clock_t start, end;
-	double cpu_time_used;
+	DTYPE cpu_time_used;
 	start = clock();
 				
 	//perform outlier algorithm
@@ -68,7 +68,7 @@ int main()
 	
 	//end timer
 	end = clock();
-	cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
+	cpu_time_used = ((DTYPE) (end - start)) / CLOCKS_PER_SEC;
 	//print how long it took to calculate outliers
 	printf("Time used : %f\n", cpu_time_used);		
 		
@@ -99,10 +99,10 @@ int main()
 }
 
 //implementation of prototypes
-double getMax(double **dataset)
+DTYPE getMax(DTYPE **dataset)
 {
 	//initialize variables
-	double max = 0.0;
+	DTYPE max = 0.0;
 	
 	//processing
 		//assume first one is max
@@ -125,10 +125,10 @@ double getMax(double **dataset)
 	return max;
 }
 
-double getMin(double **dataset)
+DTYPE getMin(DTYPE **dataset)
 {
 	//initialize variables
-	double min = 0.0;
+	DTYPE min = 0.0;
 	
 	//processing
 		//assume first one is max
