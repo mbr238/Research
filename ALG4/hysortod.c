@@ -1,7 +1,11 @@
+//header files
 #include "hysortod.h"
 
 
+//global constants
 
+
+//prototypes
 void HYsortOD(int bins, int minSplit, double outlierArray[][b], double **dataset, double length);
 
 double myScore(double density, double densityMax);
@@ -20,7 +24,7 @@ int main()
 	double outlierArray[b][b];
 	double **dataset;
     char inputFname[500] = "file.txt";	
-
+	double length = 1.0/b;
 	
 	//allocate memory for dataset
 		dataset=(double**)malloc(sizeof(double*)*N);
@@ -40,9 +44,23 @@ int main()
 		
 	//import the data set
 	importDataset(inputFname, N, dataset);	
-		
+	
+	//start the timer
+	clock_t start, end;
+	double cpu_time_used;
+	start = clock();
+				
 	//perform outlier algorithm
 	HYsortOD(bins, minSplit, outlierArray, dataset, length);
+	
+	//end timer
+	end = clock();
+	cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
+	//print how long it took to calculate outliers
+	printf("Time used : %f\n", cpu_time_used);		
+		
+
+
 	
 	//iterate through the outlier array
 	for(int i = 0; i < b;i++)
@@ -50,7 +68,7 @@ int main()
 		for(int j = 0; j < b; j++)
 		{
 			//if the outlier array spot is not equal to 0( aka not initialized)
-			if(outlierArray[i][j] != 0)
+			if(outlierArray[i][j] != 0.0)
 			{
 			//print out the outlier score to that hypercube
 			printf(" position: [%d,%d]: Outlier Score: %lf\n",i,j,outlierArray[i][j]);
@@ -66,6 +84,6 @@ int main()
 	
 
 	
-	printf("Complete");
+	printf("End program!");
 	return 0;
 }
