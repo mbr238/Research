@@ -6,10 +6,10 @@
 #include <stdlib.h>
 #include <math.h>
 #include <string.h>
+#include "params.h"
 
 //#include "ArrayLists.h"
 const int b = 5;
-#define DIM 2 //define the dimensions this program will be in
 const int N = 5159746; // how long the file is for dataset importing
 
 //data structure
@@ -21,12 +21,12 @@ typedef struct Hypercube{
 
 
 
-void create_Hypercubes(double *values, const double length, Hypercube *array[][b], int b)
+void create_Hypercubes(DTYPE *values, const DTYPE length, Hypercube *array[][b], int b)
 {
 	//initialize variables
 		//create a new hypercube based off of values
 		Hypercube *newCube = malloc(sizeof(Hypercube));
-		double correctValOne = values[0], correctValTwo = values[1];
+		DTYPE correctValOne = values[0], correctValTwo = values[1];
 		newCube->countings = 0;
 		
 	//processing	
@@ -70,7 +70,7 @@ void create_Hypercubes(double *values, const double length, Hypercube *array[][b
 }
 	
 
-int importDataset(char * fname, int N, double ** dataset)
+int importDataset(char * fname, int N, DTYPE ** dataset)
 {
 
     FILE *fp = fopen(fname, "r");
@@ -87,7 +87,7 @@ int importDataset(char * fname, int N, double ** dataset)
         colCnt = 0;
 
         char *field = strtok(buf, ",");
-        double tmp;
+        DTYPE tmp;
         sscanf(field,"%lf",&tmp);
         dataset[rowCnt][colCnt]=tmp;
 
@@ -98,7 +98,7 @@ int importDataset(char * fname, int N, double ** dataset)
           
           if (field!=NULL)
           {
-          double tmp;
+          DTYPE tmp;
           sscanf(field,"%lf",&tmp);
           dataset[rowCnt][colCnt]=tmp;
           }   
