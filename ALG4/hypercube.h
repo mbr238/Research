@@ -7,10 +7,11 @@
 #include <math.h>
 #include <string.h>
 #include "params.h"
+#include <stdbool.h>
 
 //#include "ArrayLists.h"
 const int b = 5;
-const int N = 5159746; // how long the file is for dataset importing
+const int N = 500000; // how long the file is for dataset importing
 
 //data structure
 typedef struct Hypercube{
@@ -19,52 +20,80 @@ typedef struct Hypercube{
 	
 }Hypercube;
 
+int findCube( int *tempVals )
+{
+	//initialize function
+	
+	//processing
+	for(int i = 0; i < DIM; i++)
+	{
+		
+		
+		
+	}
+	
+	//return the cube index
+	return 2;
+}
 
 
-void create_Hypercubes(DTYPE *values, const DTYPE length, Hypercube *array[][b], int b)
+void create_Hypercubes(DTYPE *values, const DTYPE length, Hypercube **array, int b)
 {
 	//initialize variables
 		//create a new hypercube based off of values
 		Hypercube *newCube = malloc(sizeof(Hypercube));
-		DTYPE correctValOne = values[0], correctValTwo = values[1];
 		newCube->countings = 0;
+		bool initFlag = true;
+		int tempVal = 0, initVal = 0;
+		int tempVals[DIM];
 		
 	//processing	
 		//check if the dataset we are working with is not negative numbers
-		if(values[0] > 0 && values[1] > 0)
+		for(int i = 0; i < DIM; i++)
 		{
-		//check if the values are above the allowed limit
-		if(correctValOne > b)
+			if(values[i] < 0.0)
 			{
-				//adjust the points within the domain
-				correctValOne = values[0] * length / 20;			
+				initFlag = false;
+				free(newCube);
+			}
+		}
+			if(initFlag)
+			{
+			
+			//get the spot that is going to be initialized if not already
+			for(int i = 0; i < DIM; i++)
+			{
+			tempVal = (int)(floor(values[i] / 100.0));
+			
+			tempVals[i] = tempVal;
+			
 			}
 			
-			if( correctValTwo > b)
-				{	
-					correctValTwo = values[1] * length / 20;
-				}
+			initVal = findCube( tempVals );
 			
 			//check to see if hypercube is uninitialized aka equal to null
-			if(array[(int)floor(correctValOne)][(int)floor(correctValTwo)] == NULL)
+			if(array[initVal] == NULL)
 				{
 				//add the values to the hypercube
-				newCube->coords[0] = correctValOne;
-				newCube->coords[1] = correctValTwo;
+				for( int i = 0; i < DIM; i++)
+				{
+					newCube->coords[i] = (int)(floor(values[i] / 100.0)); 
+				}
 				newCube->countings++;
 				
 				//throw cube in array list
-				array[(int)floor(newCube->coords[0])][(int)floor(newCube->coords[1])] = newCube;
+				array[initVal] = newCube;
 				
 				}
 			//otherwise hypercube initialized
 			else
 				{
 				//store the new data point within the hypercube array for each instance
-				array[(int)floor(correctValOne)][(int)floor(correctValTwo)]->countings++;
+				array[initVal]->countings++;
 				free(newCube);
+				
 				}
-		}
+			}
 	//void function
 	
 }
