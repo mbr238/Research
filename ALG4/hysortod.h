@@ -42,20 +42,12 @@ DTYPE max(DTYPE *W, int b)
 //hysortod function retruns an array of outlierness in parameters
 	
 											//same size as dataset -- outlierarray
-void HYsortOD(int bins, int minSplit, DTYPE *outlierArray, DTYPE **dataset, DTYPE length)
+void HYsortOD(int bins, DTYPE *outlierArray, DTYPE **dataset, Hypercube **array, int N)
 {
 	//initialize program
 	DTYPE values[DIM];
-	int arrSize = pow(b,DIM), i = 0;
-	Hypercube* *array = malloc(sizeof(Hypercube*)*arrSize);
+	int arrSize = pow(bins,DIM);
 	DTYPE density, result;	
-	
-	//initialize array to null initially
- 	for(i = 0; i <= arrSize; i++)
-	{
-	array[i] = NULL;
-	
-	}
 
 	//processing
 		//create the hypercubes
@@ -65,7 +57,7 @@ void HYsortOD(int bins, int minSplit, DTYPE *outlierArray, DTYPE **dataset, DTYP
 				{
 				values[k] = dataset[i][k];
 				}
-				create_Hypercubes( values, length, array, bins);	
+				create_Hypercubes( values, array, bins);	
 			}		
 		
 		
@@ -89,7 +81,7 @@ void HYsortOD(int bins, int minSplit, DTYPE *outlierArray, DTYPE **dataset, DTYP
 				if(array[i] != NULL)
 				{
 					//calculate neighborhood density
-					density = neighborhood_density(array, array[i]);
+					density = neighborhood_density(array, array[i], bins);
 					
 					//insert that density into the density  array	
 					W[i] = density;
@@ -106,7 +98,7 @@ void HYsortOD(int bins, int minSplit, DTYPE *outlierArray, DTYPE **dataset, DTYP
 		//end for
 	
 		//calclate the largest density value
-		DTYPE Wmax = max(W, b);
+		DTYPE Wmax = max(W, bins);
 		
 		//for reach datapoint within the dataset
 			for(int index = 0; index <= arrSize; index++)
