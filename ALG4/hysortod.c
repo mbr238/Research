@@ -6,15 +6,6 @@
 
 
 //prototypes
-void HYsortOD(int bins, int minSplit, DTYPE outlierArray[][b], DTYPE **dataset, DTYPE length);
-
-DTYPE myScore(DTYPE density, DTYPE densityMax);
-
-DTYPE neighborhood_density(Hypercube* array[][b], Hypercube *H);
-												//fix with binary tree root
-void construct( Hypercube *array, int minSplit, Hypercube* root, int constant);
-
-DTYPE max(DTYPE W[][b], int b);
 
 DTYPE getMax(DTYPE **dataset);
 
@@ -26,7 +17,7 @@ int main()
 	//initialize variables/datasets
 	int bins = 5;
 	int minSplit = 100;
-	DTYPE outlierArray[b][b];
+	DTYPE *outlierArray = (DTYPE*)malloc(sizeof(DTYPE*)*b*DIM);
 	DTYPE **dataset;
     char inputFname[500] = "file.txt";	
 	DTYPE length = 1.0/b;
@@ -41,12 +32,9 @@ int main()
 		
 		
 		//set the outlier array originally to 0s 
-		for(int i = 0; i < b; i++)
+		for(int i = 0; i <= pow(b,DIM); i++)
 		{
-			for(int j = 0; j < b; j++)
-			{
-				outlierArray[i][j] = 0.0;
-			}
+		outlierArray[i] = 0.0;
 		}
 		
 	//import the data set
@@ -76,22 +64,15 @@ int main()
 
 	
 	//iterate through the outlier array
-	for(int i = 0; i < b;i++)
+	for(int i = 0; i <= pow(b,DIM); i++)
 	{
-		for(int j = 0; j < b; j++)
-		{
 			//if the outlier array spot is not equal to 0( aka not initialized)
-			if(outlierArray[i][j] != 0.0)
+			if(outlierArray[i] != 0.0)
 			{
 			//print out the outlier score to that hypercube
-			printf(" position: [%d,%d]: Outlier Score: %lf\n",i,j,outlierArray[i][j]);
+			printf(" position: [%d]: Outlier Score: %lf\n",i,outlierArray[i]);
 			}
-			//goto next row once j is 4			
-			if(j == 4)
-			{
-				printf("Next row\n");
-			}
-		}
+			printf("%d\n",i);
 	}
 	
 	printf("End program!");
