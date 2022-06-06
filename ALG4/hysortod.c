@@ -7,21 +7,28 @@
 
 //prototypes
 
-DTYPE getMax(DTYPE **dataset);
+DTYPE getMax(DTYPE **dataset, int N);
 
-DTYPE getMin(DTYPE **dataset);
+DTYPE getMin(DTYPE **dataset, int N);
 
 
 int main()
 {
 	//initialize variables/datasets
 	int bins = 5;
-	int minSplit = 100;
-	DTYPE *outlierArray = (DTYPE*)malloc(sizeof(DTYPE*)*b*DIM);
+	DTYPE *outlierArray = (DTYPE*)malloc(sizeof(DTYPE*)*pow(bins,DIM));
 	DTYPE **dataset;
     char inputFname[500] = "file.txt";	
-	DTYPE length = 1.0/b;
 	DTYPE max = 0, min = 0;
+	Hypercube* *array = malloc(sizeof(Hypercube*)*pow(bins,DIM));
+    int i = 0, N = 500000;
+	
+	//initialize array to null initially
+ 	for(i = 0; i <= pow(bins,DIM); i++)
+	{
+	array[i] = NULL;
+	
+	}
 	
 	//allocate memory for dataset
 		dataset=(DTYPE**)malloc(sizeof(DTYPE*)*N);
@@ -32,7 +39,7 @@ int main()
 		
 		
 		//set the outlier array originally to 0s 
-		for(int i = 0; i <= pow(b,DIM); i++)
+		for(int i = 0; i <= pow(bins,DIM); i++)
 		{
 		outlierArray[i] = 0.0;
 		}
@@ -41,9 +48,9 @@ int main()
 	importDataset(inputFname, N, dataset);	
 	
 	//get the max and min of the dataset
-	max = getMax(dataset);
+	max = getMax(dataset, N);
 		
-	min = getMin(dataset);
+	min = getMin(dataset, N);
 
 	
 	//start the timer
@@ -52,7 +59,7 @@ int main()
 	start = clock();
 				
 	//perform outlier algorithm
-	HYsortOD(bins, minSplit, outlierArray, dataset, length);
+	HYsortOD(bins, outlierArray, dataset, array, N);
 	
 	//end timer
 	end = clock();
@@ -64,7 +71,7 @@ int main()
 
 	
 	//iterate through the outlier array
-	for(int i = 0; i <= pow(b,DIM); i++)
+	for(int i = 0; i <= pow(bins,DIM); i++)
 	{
 			//if the outlier array spot is not equal to 0( aka not initialized)
 			if(outlierArray[i] != 0.0)
@@ -80,7 +87,7 @@ int main()
 }
 
 //implementation of prototypes
-DTYPE getMax(DTYPE **dataset)
+DTYPE getMax(DTYPE **dataset, int N)
 {
 	//initialize variables
 	DTYPE max = 0.0;
@@ -106,7 +113,7 @@ DTYPE getMax(DTYPE **dataset)
 	return max;
 }
 
-DTYPE getMin(DTYPE **dataset)
+DTYPE getMin(DTYPE **dataset, int N)
 {
 	//initialize variables
 	DTYPE min = 0.0;
