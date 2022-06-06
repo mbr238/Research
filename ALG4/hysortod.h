@@ -10,6 +10,7 @@
 //prototypes
 DTYPE myScore(DTYPE density, DTYPE densityMax)
 {
+	
 	//return the score
 	return (1.000000 - (density/densityMax));
 }
@@ -21,20 +22,17 @@ DTYPE myScore(DTYPE density, DTYPE densityMax)
 //} //comes from alg 2 when constructed
 
 
-DTYPE max(DTYPE W[][b], int b)
+DTYPE max(DTYPE *W, int b)
 {
-	DTYPE max = W[0][0];
+	DTYPE max = W[0];
 	
-	for(int i = 0; i < b; i++)
+	for(int i = 0; i < pow(b,DIM); i++)
 	{
-		for(int j = 0; j < b; j++)
-		{
-			if(W[i][j] > max)
+			if(W[i] > max)
 			{
-				max = W[i][j];
+				max = W[i];
 				
 			}
-		}
 	}
 	
 	return max;
@@ -44,31 +42,30 @@ DTYPE max(DTYPE W[][b], int b)
 //hysortod function retruns an array of outlierness in parameters
 	
 											//same size as dataset -- outlierarray
-void HYsortOD(int bins, int minSplit, DTYPE outlierArray[][b], DTYPE **dataset, DTYPE length)
+void HYsortOD(int bins, int minSplit, DTYPE *outlierArray, DTYPE **dataset, DTYPE length)
 {
 	//initialize program
 	DTYPE values[DIM];
-	Hypercube* array[b][b];
-	DTYPE result;	
-	DTYPE density;	
+	int arrSize = pow(b,DIM), i = 0;
+	Hypercube* *array = malloc(sizeof(Hypercube*)*arrSize);
+	DTYPE density, result;	
 	
 	//initialize array to null initially
- 	for(int i = 0; i < b; i++)
+ 	for(i = 0; i <= arrSize; i++)
 	{
-		for(int j = 0; j < b; j++)
-		{
-		array[i][j] = NULL;
-		}
-		
-	}
+	array[i] = NULL;
 	
+	}
+
 	//processing
 		//create the hypercubes
 			for(int i = 0; i < N; i++)
 			{
-					values[0] = dataset[i][0];
-					values[1] = dataset[i][1];
-					create_Hypercubes( values, length, array, bins);	
+				for(int k = 0; k < DIM; k++)
+				{
+				values[k] = dataset[i][k];
+				}
+				create_Hypercubes( values, length, array, bins);	
 			}		
 		
 		
@@ -76,68 +73,64 @@ void HYsortOD(int bins, int minSplit, DTYPE outlierArray[][b], DTYPE **dataset, 
 		//probably dont need since the array has them next to eachother based on points anyways
 		
 		//create an empty density array W
-		DTYPE W[b][b];
+		DTYPE *W = malloc(sizeof(DTYPE*)*arrSize);
 	
 		//initialize the density arrayss to 0s
-		for(int i = 0; i < b; i++)
+		for(int i = 0; i <= arrSize; i++)
 		{
-			for(int j = 0; j < b; j++)
-			{
-				W[i][j] = 0.0;
-			}
+				W[i] = 0.0;
 		}
 		
 		
 		//iterate through the hypercube array for each hypercube
-		for(int i = 0; i < b; i++)
+		for(int i = 0; i <= arrSize; i++)
 		{
-			for(int j = 0; j < b; j++)
-			{
 				//if the hypercube is initialized
-				if(array[i][j] != NULL)
+				if(array[i] != NULL)
 				{
 					//calculate neighborhood density
-					density = neighborhood_density(array, array[i][j]);
+					density = neighborhood_density(array, array[i]);
 					
 					//insert that density into the density  array	
-					W[i][j] = density;
+					W[i] = density;
 					
 				}
+				else
+				{
+					W[i] = 0.0;
+				}
 				//otherwise it is not initialized
-		
-			}
 			
 		}
-
+		
 		//end for
 	
 		//calclate the largest density value
 		DTYPE Wmax = max(W, b);
 		
 		//for reach datapoint within the dataset
-			for(int index = 0; index < b; index++)
+			for(int index = 0; index <= arrSize; index++)
 			{
-				for(int j = 0; j < b; j++)
-				{
 				//if the hypercube is initialized
-				if(array[index][j] != NULL)
+				if(array[index] != NULL)
 				{
 				//calculate the score for that datapoint within hypercubes
-				result = myScore(W[index][j], Wmax);
+				result = myScore(W[index], Wmax);
 				
 				//insert that score into the outlier array
-				outlierArray[index][j] = result;
+				outlierArray[index] = result;
+				
 				}
 				//otherwise hypercube is not initialized
 				else
 				{
 				//set the spot in outlier array to 0 for not initialized
-				outlierArray[index][j] = 0.0;
-				}
+				outlierArray[index] = 0.0;
+				
 				}
 			}
 		//end for
-
+		
 		//end program
 }
 
