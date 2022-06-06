@@ -1,6 +1,7 @@
 #ifndef HYPERCUBE_H
 #define HYPERCUBE_H
 
+//header files
 #include <stdio.h>
 #include <unistd.h>
 #include <stdlib.h>
@@ -10,8 +11,8 @@
 #include <stdbool.h>
 
 //#include "ArrayLists.h"
-const int b = 5;
-const int N = 500000; // how long the file is for dataset importing
+//const int b = 5;
+
 
 //data structure
 typedef struct Hypercube{
@@ -37,7 +38,7 @@ int findCube( int *tempVals )
 }
 
 
-void create_Hypercubes(DTYPE *values, const DTYPE length, Hypercube **array, int b)
+void create_Hypercubes(DTYPE *values, Hypercube **array, int b)
 {
 	//initialize variables
 		//create a new hypercube based off of values
