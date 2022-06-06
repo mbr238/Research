@@ -1,5 +1,7 @@
 #ifndef NEIGHBOR_H
 #define NEIGHBOR_H
+
+//header files
 #include <time.h>
 #include <stdbool.h>
 #include "params.h"
@@ -15,7 +17,7 @@ bool isImmediate(Hypercube *H, Hypercube *F)
 }
 
 
-DTYPE neighborhood_density(Hypercube **array, Hypercube *H)
+DTYPE neighborhood_density(Hypercube **array, Hypercube *H, int bins)
 {
 	//initialize program
 	DTYPE density = 0;
@@ -25,7 +27,7 @@ DTYPE neighborhood_density(Hypercube **array, Hypercube *H)
 		density = H->countings;
 		
 			//traverse the hypercube array
-			for(int k = 0; k <= pow(b,DIM); k++)
+			for(int k = 0; k <= pow(bins,DIM); k++)
 			{
 					//check if the hypercubes are immediate
 					if( array[k] != NULL && array[k] != H && isImmediate(H, array[k]) )
