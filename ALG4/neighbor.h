@@ -10,8 +10,15 @@
 bool isImmediate(Hypercube *H, Hypercube *F)
 {
 	//initialize varaibles
-	bool neighborFlag = false;
+	bool neighborFlag = true;
 
+	for(int i = 0; i < DIM; i++)
+	{
+		if( abs(H->coords[i] - F->coords[i]) > 1)
+		{
+			return false;
+		}
+	}
 
 	return neighborFlag;
 }
