@@ -10,8 +10,6 @@
 #include "params.h"
 #include <stdbool.h>
 
-//#include "ArrayLists.h"
-//const int b = 5;
 
 
 //data structure
@@ -21,20 +19,31 @@ typedef struct Hypercube{
 	
 }Hypercube;
 
-int findCube( int *tempVals )
+int findCube( int *tempVals, int bins )
 {
 	//initialize function
-	
-	//processing
+	int location = 0, value;
+
+
 	for(int i = 0; i < DIM; i++)
 	{
+		value = tempVals[i];
 		
+		if(i % 2 == 0)
+		{
+		location = location + (bins * value);
+		}
+		else
+		{
+		location = location + value;
+		}
 		
 		
 	}
+
 	
 	//return the cube index
-	return 2;
+	return location;
 }
 
 
@@ -64,13 +73,15 @@ void create_Hypercubes(DTYPE *values, Hypercube **array, int b)
 			//get the spot that is going to be initialized if not already
 			for(int i = 0; i < DIM; i++)
 			{
+			if(values[i] > 5)
+			{
 			tempVal = (int)(floor(values[i] / 100.0));
-			
+			}
 			tempVals[i] = tempVal;
 			
 			}
 			
-			initVal = findCube( tempVals );
+			initVal = findCube( tempVals, b );
 			
 			//check to see if hypercube is uninitialized aka equal to null
 			if(array[initVal] == NULL)
