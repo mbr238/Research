@@ -11,42 +11,35 @@
 DTYPE myScore(DTYPE density, DTYPE densityMax)
 {
 	
-	//return the score
+	//return the density score
 	return (1.000000 - (density/densityMax));
 }
 
-												//fix with binary tree root
-//void construct( Hypercube *array, int minSplit, Hypercube *root, int constant)
-//{
-//	printf("Constructing\n");
-//} //comes from alg 2 when constructed
-
-
 DTYPE max(DTYPE *W, int b)
 {
+	//initialize variables
 	DTYPE max = W[0];
-	
+	//loop through the array
 	for(int i = 0; i < pow(b,DIM); i++)
 	{
 			if(W[i] > max)
 			{
+				//if the current val is greater than max replace it
 				max = W[i];
-				
 			}
 	}
-	
+	//return max
 	return max;
 }
 
 
 //hysortod function retruns an array of outlierness in parameters
-	
 											//same size as dataset -- outlierarray
 void HYsortOD(int bins, DTYPE *outlierArray, DTYPE **dataset, Hypercube **array, int N)
 {
 	//initialize program
 	DTYPE values[DIM];
-	int arrSize = pow(bins,DIM);
+	int arrSize = pow(bins,DIM) + 2;;
 	DTYPE density, result;	
 
 	//processing
@@ -65,18 +58,19 @@ void HYsortOD(int bins, DTYPE *outlierArray, DTYPE **dataset, Hypercube **array,
 		//probably dont need since the array has them next to eachother based on points anyways
 		
 		//create an empty density array W
-		DTYPE *W = malloc(sizeof(DTYPE*)*arrSize);
-	
+		DTYPE *W = (DTYPE*)malloc(sizeof(DTYPE*)*arrSize);
+	    
 		//initialize the density arrayss to 0s
-		for(int i = 0; i <= arrSize; i++)
+		for(int i = 0; i < arrSize; i++)
 		{
 				W[i] = 0.0;
 		}
 		
 		
 		//iterate through the hypercube array for each hypercube
-		for(int i = 0; i <= arrSize; i++)
+		for(int i = 0; i < arrSize; i++)
 		{
+			
 				//if the hypercube is initialized
 				if(array[i] != NULL)
 				{
@@ -87,12 +81,8 @@ void HYsortOD(int bins, DTYPE *outlierArray, DTYPE **dataset, Hypercube **array,
 					W[i] = density;
 					
 				}
-				else
-				{
-					W[i] = 0.0;
-				}
-				//otherwise it is not initialized
-			
+				//otherwise it is not initialized	
+				
 		}
 		
 		//end for
@@ -101,7 +91,7 @@ void HYsortOD(int bins, DTYPE *outlierArray, DTYPE **dataset, Hypercube **array,
 		DTYPE Wmax = max(W, bins);
 		
 		//for reach datapoint within the dataset
-			for(int index = 0; index <= arrSize; index++)
+			for(int index = 0; index < arrSize; index++)
 			{
 				//if the hypercube is initialized
 				if(array[index] != NULL)
