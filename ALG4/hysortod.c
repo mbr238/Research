@@ -16,18 +16,19 @@ int main()
 {
 	//initialize variables/datasets
 	int bins = 5;
-	DTYPE *outlierArray = (DTYPE*)malloc(sizeof(DTYPE*)*pow(bins,DIM));
+	int arrSize = pow(bins,DIM) + 2;
+	DTYPE *outlierArray = (DTYPE*)malloc(sizeof(DTYPE*)*arrSize);
 	DTYPE **dataset;
     char inputFname[500] = "file.txt";	
 	DTYPE max = 0, min = 0;
-	Hypercube* *array = malloc(sizeof(Hypercube*)*pow(bins,DIM));
-    int i = 0, N = 500000;
+	Hypercube **array = malloc(sizeof(Hypercube*)*arrSize);
+    int i = 0, N = 5000000;
 	
 	//initialize array to null initially
- 	for(i = 0; i <= pow(bins,DIM); i++)
+ 	for(i = 0; i < arrSize; i++)
 	{
-	array[i] = NULL;
 	
+	array[i] = NULL;
 	}
 	
 	//allocate memory for dataset
@@ -39,7 +40,7 @@ int main()
 		
 		
 		//set the outlier array originally to 0s 
-		for(int i = 0; i <= pow(bins,DIM); i++)
+		for(int i = 0; i < arrSize; i++)
 		{
 		outlierArray[i] = 0.0;
 		}
@@ -71,7 +72,7 @@ int main()
 
 	
 	//iterate through the outlier array
-	for(int i = 0; i <= pow(bins,DIM); i++)
+	for(int i = 0; i < arrSize; i++)
 	{
 			//if the outlier array spot is not equal to 0( aka not initialized)
 			if(outlierArray[i] != 0.0)
