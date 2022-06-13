@@ -20,7 +20,7 @@ DTYPE max(DTYPE *W, int b)
 	//initialize variables
 	DTYPE max = W[0];
 	//loop through the array
-	for(int i = 0; i < pow(b,DIM); i++)
+	for(int i = 0; i <= pow(b-1,DIM); i++)
 	{
 			if(W[i] > max)
 			{
@@ -39,7 +39,6 @@ void HYsortOD(int bins, DTYPE *outlierArray, DTYPE **dataset, Hypercube **array,
 {
 	//initialize program
 	DTYPE values[DIM];
-	int arrSize = pow(bins,DIM) + 2;;
 	DTYPE density, result;	
 
 	//processing
@@ -58,17 +57,17 @@ void HYsortOD(int bins, DTYPE *outlierArray, DTYPE **dataset, Hypercube **array,
 		//probably dont need since the array has them next to eachother based on points anyways
 		
 		//create an empty density array W
-		DTYPE *W = (DTYPE*)malloc(sizeof(DTYPE*)*arrSize);
+		DTYPE *W = (DTYPE*)malloc(sizeof(DTYPE*)*pow(bins-1,DIM));
 	    
 		//initialize the density arrayss to 0s
-		for(int i = 0; i < arrSize; i++)
+		for(int i = 0; i <= pow(bins-1,DIM); i++)
 		{
 				W[i] = 0.0;
 		}
 		
 		
 		//iterate through the hypercube array for each hypercube
-		for(int i = 0; i < arrSize; i++)
+		for(int i = 0; i < pow(bins-1,DIM); i++)
 		{
 			
 				//if the hypercube is initialized
@@ -91,7 +90,7 @@ void HYsortOD(int bins, DTYPE *outlierArray, DTYPE **dataset, Hypercube **array,
 		DTYPE Wmax = max(W, bins);
 		
 		//for reach datapoint within the dataset
-			for(int index = 0; index < arrSize; index++)
+			for(int index = 0; index <= pow(bins-1,DIM); index++)
 			{
 				//if the hypercube is initialized
 				if(array[index] != NULL)
