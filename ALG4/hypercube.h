@@ -9,7 +9,7 @@
 #include <string.h>
 #include "params.h"
 #include <stdbool.h>
-
+#include <stdint.h>
 
 
 //data structure
@@ -19,32 +19,17 @@ typedef struct Hypercube{
 	
 }Hypercube;
 
-int findCube( int *tempVals, int bins )
-{
-	//initialize function
-	int location = 0, value;
-
-
-	for(int i = 0; i < DIM; i++)
-	{
-		value = tempVals[i];
-		
-		if(i % 2 == 0)
-		{
-		location = location + (bins * value);
-		}
-		else
-		{
-		location = location + value;
-		}
-		
-		
+uint64_t getLinearID(unsigned int * indexes, unsigned int * dimLen, unsigned int nDimensions) {
+    uint64_t offset = 0;
+	uint64_t multiplier = 1;
+	for (int i = 0; i<nDimensions; i++){
+  	offset += (uint64_t)indexes[i] * multiplier;
+  	multiplier *= dimLen[i];
 	}
-
 	
-	//return the cube index
-	return location;
+	return offset;
 }
+
 
 
 void create_Hypercubes(DTYPE *values, Hypercube **array, int b)
@@ -55,7 +40,13 @@ void create_Hypercubes(DTYPE *values, Hypercube **array, int b)
 		newCube->countings = 0;
 		bool initFlag = true;
 		int tempVal = 0, initVal = 0;
-		int tempVals[DIM];
+		unsigned int tempVals[DIM];
+        unsigned int dim[DIM];
+		
+		for(int i = 0; i < DIM; i++)
+		{
+			dim[i] = b;
+		}
 		
 	//processing	
 		//check if the dataset we are working with is not negative numbers
@@ -72,16 +63,19 @@ void create_Hypercubes(DTYPE *values, Hypercube **array, int b)
 			
 			//get the spot that is going to be initialized if not already
 			for(int i = 0; i < DIM; i++)
-			{
-			if(values[i] > 5)
+			{		
+			if(values[i] > 4)
 			{
 			tempVal = (int)(floor(values[i] / 100.0));
 			}
+			else
+			{
+			tempVal = (int) values[i];
+			}
 			tempVals[i] = tempVal;
-			
 			}
 			
-			initVal = findCube( tempVals, b );
+			initVal = getLinearID( tempVals, dim, DIM);
 			
 			//check to see if hypercube is uninitialized aka equal to null
 			if(array[initVal] == NULL)
@@ -89,7 +83,8 @@ void create_Hypercubes(DTYPE *values, Hypercube **array, int b)
 				//add the values to the hypercube
 				for( int i = 0; i < DIM; i++)
 				{
-					newCube->coords[i] = (int)(floor(values[i] / 100.0)); 
+					newCube->coords[i] = tempVals[i]; 
+					
 				}
 				newCube->countings++;
 				
