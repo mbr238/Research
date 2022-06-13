@@ -10,7 +10,6 @@
 bool isImmediate(Hypercube *H, Hypercube *F)
 {
 	//initialize varaibles
-	bool neighborFlag = true;
 
 	for(int i = 0; i < DIM; i++)
 	{
@@ -20,7 +19,7 @@ bool isImmediate(Hypercube *H, Hypercube *F)
 		}
 	}
 
-	return neighborFlag;
+	return true;
 }
 
 
@@ -34,7 +33,7 @@ DTYPE neighborhood_density(Hypercube **array, Hypercube *H, int bins)
 		density = H->countings;
 		
 			//traverse the hypercube array
-			for(int k = 0; k <= pow(bins,DIM); k++)
+			for(int k = 0; k < pow(bins - 1,DIM); k++)
 			{
 					//check if the hypercubes are immediate
 					if( array[k] != NULL && array[k] != H && isImmediate(H, array[k]) )
