@@ -16,18 +16,18 @@ int main()
 {
 	//initialize variables/datasets
 	int bins = 5;
-	int arrSize = pow(bins,DIM) + 2;
-	DTYPE *outlierArray = (DTYPE*)malloc(sizeof(DTYPE*)*arrSize);
+    int i = 0;
+	int N = 5159738, arrSize = N;
+	DTYPE *outlierArray = (DTYPE*)malloc(sizeof(DTYPE*)*pow(bins - 1,DIM));
 	DTYPE **dataset;
     char inputFname[500] = "file.txt";	
-	DTYPE max = 0, min = 0;
+	//DTYPE max = 0, min = 0;
 	Hypercube **array = malloc(sizeof(Hypercube*)*arrSize);
-    int i = 0, N = 5000000;
+
 	
 	//initialize array to null initially
- 	for(i = 0; i < arrSize; i++)
+ 	for(i = 0; i <= N; i++)
 	{
-	
 	array[i] = NULL;
 	}
 	
@@ -40,7 +40,7 @@ int main()
 		
 		
 		//set the outlier array originally to 0s 
-		for(int i = 0; i < arrSize; i++)
+		for(int i = 0; i <= pow(bins - 1,DIM); i++)
 		{
 		outlierArray[i] = 0.0;
 		}
@@ -49,9 +49,9 @@ int main()
 	importDataset(inputFname, N, dataset);	
 	
 	//get the max and min of the dataset
-	max = getMax(dataset, N);
+	//max = getMax(dataset, N);
 		
-	min = getMin(dataset, N);
+	//min = getMin(dataset, N);
 
 	
 	//start the timer
@@ -72,16 +72,18 @@ int main()
 
 	
 	//iterate through the outlier array
-	for(int i = 0; i < arrSize; i++)
+	for(int i = 0; i <= pow(bins - 1, DIM); i++)
 	{
 			//if the outlier array spot is not equal to 0( aka not initialized)
-			if(outlierArray[i] != 0.0)
+			if(array[i] != NULL)
 			{
 			//print out the outlier score to that hypercube
 			printf(" position: [%d]: Outlier Score: %lf\n",i,outlierArray[i]);
 			}
-			printf("%d\n",i);
+
 	}
+	
+	
 	
 	printf("End program!");
 	return 0;
