@@ -15,12 +15,12 @@ DTYPE myScore(DTYPE density, DTYPE densityMax)
 	return (1.000000 - (density/densityMax));
 }
 
-DTYPE max(DTYPE *W, int b)
+DTYPE max(DTYPE *W, int N)
 {
 	//initialize variables
 	DTYPE max = W[0];
 	//loop through the array
-	for(int i = 0; i < pow(b-1,DIM); i++)
+	for(int i = 0; i < N; i++)
 	{
 			if(W[i] > max)
 			{
@@ -40,7 +40,7 @@ void HYsortOD(int bins, DTYPE *outlierArray, DTYPE **dataset, Hypercube **array,
 	//initialize program
 	DTYPE values[DIM];
 	DTYPE density, result;	
-
+	
 	//processing
 		//create the hypercubes
 			for(int i = 0; i < N; i++)
@@ -57,24 +57,24 @@ void HYsortOD(int bins, DTYPE *outlierArray, DTYPE **dataset, Hypercube **array,
 		//probably dont need since the array has them next to eachother based on points anyways
 		
 		//create an empty density array W
-		DTYPE *W = (DTYPE*)malloc(sizeof(DTYPE*)*pow(bins-1,DIM));
+		DTYPE *W = (DTYPE*)malloc(sizeof(DTYPE*)*N);
 	    
 		//initialize the density arrayss to 0s
-		for(int i = 0; i < pow(bins-1,DIM); i++)
+		for(int i = 0; i < pow(bins - 1, DIM); i++)
 		{
 				W[i] = 0.0;
 		}
 		
 		
 		//iterate through the hypercube array for each hypercube
-		for(int i = 0; i < pow(bins-1,DIM); i++)
+		for(int i = 0; i < pow(bins - 1, DIM); i++)
 		{
 			
 				//if the hypercube is initialized
 				if(array[i] != NULL)
 				{
 					//calculate neighborhood density
-					density = neighborhood_density(array, array[i], bins);
+					density = neighborhood_density(array, array[i], N);
 					
 					//insert that density into the density  array	
 					W[i] = density;
@@ -86,10 +86,10 @@ void HYsortOD(int bins, DTYPE *outlierArray, DTYPE **dataset, Hypercube **array,
 		//end for
 	
 		//calclate the largest density value
-		DTYPE Wmax = max(W, bins);
+		DTYPE Wmax = max(W, pow(bins - 1, DIM));
 		
 		//for reach datapoint within the dataset
-			for(int index = 0; index < pow(bins-1,DIM); index++)
+			for(int index = 0; index < pow(bins - 1, DIM); index++)
 			{
 				//if the hypercube is initialized
 				if(array[index] != NULL)
