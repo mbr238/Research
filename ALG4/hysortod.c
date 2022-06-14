@@ -45,7 +45,7 @@ int main(int argc, char **argv)
 	importDataset(inputFname, N, dataset);	
 
 	//set the outlier array originally to 0s 
-		for(int i = 0; i < pow(bins - 1,DIM); i++)
+		for(int i = 0; i < pow(bins - 1, DIM); i++)
 		{
 		outlierArray[i] = 0.0;
 		}	
@@ -68,7 +68,7 @@ int main(int argc, char **argv)
 	end = clock();
 	cpu_time_used = ((DTYPE) (end - start)) / CLOCKS_PER_SEC;
 	//print how long it took to calculate outliers
-	printf("Time used : %f\n", cpu_time_used);		
+	
 		
 
 
@@ -86,7 +86,7 @@ int main(int argc, char **argv)
 	}
 	
 	
-	
+	printf("Time used : %f\n", cpu_time_used);		
 	printf("End program!");
 	return 0;
 }
