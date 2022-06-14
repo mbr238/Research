@@ -15,7 +15,7 @@
 //data structure
 typedef struct Hypercube{
 	int coords[DIM];
-	int countings;
+	double countings;
 	
 }Hypercube;
 
