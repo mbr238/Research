@@ -12,21 +12,23 @@ DTYPE getMax(DTYPE **dataset, int N);
 DTYPE getMin(DTYPE **dataset, int N);
 
 
-int main()
+int main(int argc, char **argv)
 {
 	//initialize variables/datasets
-	int bins = 5;
-    int i = 0;
-	int N = 5159738, arrSize = N;
-	DTYPE *outlierArray = (DTYPE*)malloc(sizeof(DTYPE*)*pow(bins - 1,DIM));
+	int bins = 5, i = 0, N;
+	char inputFname[500];
+    sscanf(argv[1],"%d",&N);	//number of lines in text
+    strcpy(inputFname,argv[2]);	// the file name
+	int arrSize = N;
+	DTYPE *outlierArray = (DTYPE*)malloc(sizeof(DTYPE*)*arrSize);
 	DTYPE **dataset;
-    char inputFname[500] = "file.txt";	
 	//DTYPE max = 0, min = 0;
-	Hypercube **array = malloc(sizeof(Hypercube*)*arrSize);
+	Hypercube **array = malloc(sizeof(Hypercube)*arrSize);
 
 	
+	
 	//initialize array to null initially
- 	for(i = 0; i <= N; i++)
+ 	for(i = 0; i < N; i++)
 	{
 	array[i] = NULL;
 	}
@@ -39,15 +41,15 @@ int main()
 		}	
 		
 		
-		//set the outlier array originally to 0s 
-		for(int i = 0; i <= pow(bins - 1,DIM); i++)
-		{
-		outlierArray[i] = 0.0;
-		}
-		
 	//import the data set
 	importDataset(inputFname, N, dataset);	
-	
+
+	//set the outlier array originally to 0s 
+		for(int i = 0; i < pow(bins - 1,DIM); i++)
+		{
+		outlierArray[i] = 0.0;
+		}	
+		
 	//get the max and min of the dataset
 	//max = getMax(dataset, N);
 		
@@ -58,7 +60,7 @@ int main()
 	clock_t start, end;
 	DTYPE cpu_time_used;
 	start = clock();
-				
+	
 	//perform outlier algorithm
 	HYsortOD(bins, outlierArray, dataset, array, N);
 	
@@ -72,7 +74,7 @@ int main()
 
 	
 	//iterate through the outlier array
-	for(int i = 0; i <= pow(bins - 1, DIM); i++)
+	for(int i = 0; i < pow(bins - 1, DIM); i++)
 	{
 			//if the outlier array spot is not equal to 0( aka not initialized)
 			if(array[i] != NULL)
