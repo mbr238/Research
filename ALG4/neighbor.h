@@ -32,59 +32,56 @@ bool isImmediate(Hypercube *H, Hypercube *F)
 }
 
 
-DTYPE neighborhood_density(Hypercube **array, Hypercube *H, int N)
+void neighborhood_density(Hypercube **array, int N, DTYPE *W)
 {
 	//initialize program
-	DTYPE density = 0;
 	
 	//processing
-		//initialize density with the first density/hypercube countins
-		density = H->countings;
-		
-		
-		
 			//traverse the hypercube array
-			for(int k = 0; k < N; k++)
+			for(int i = 0; i < 25; i++)
 			{
-				for(int i = k - 1; i >= 0; i--)
-				{
-					if(!isProspective(array[k], H))
-					{
-						break;
-					}
-					//check if the hypercubes are immediate
-					if( array[k] != NULL && array[k] != H && isImmediate(H, array[k]) )
-					{
-						//if they are then add that cubes contings to the original density
-						density = density + array[k]->countings;
-						
-					}	
-				}
-
-				for(int i = 0; i >= 0; i++)
-				{
-					if(!isProspective(array[k], H))
-					{
-						break;
-					}
-					//check if the hypercubes are immediate
-					if( array[k] != NULL && array[k] != H && isImmediate(H, array[k]) )
-					{
-						//if they are then add that cubes contings to the original density
-						density = density + array[k]->countings;
-						
-					}	
-				}
-
-
-
 				
-					//end if loop
+				if(array[i] != NULL)
+				{
+				W[i] = array[i]->countings;
+				
+				for(int k = i - 1; k >= 0; k--)
+				{
+					if(array[k] != NULL)
+					{
+					if(!isProspective(array[i],array[k]))
+					{
+						break;
+					}
+					if(isImmediate(array[i],array[k]))
+					{
+						W[i] += array[k]->countings;
+					}
+					}
+					
+				}	
+				for(int k = i + 1; k < N; k++)
+				{
+					if(array[k] != NULL)
+					{
+					if(!isProspective(array[i],array[k]))
+					{
+						break;
+					}
+					if(isImmediate(array[i],array[k]))
+					{
+						W[i] += array[k]->countings;
+					}
+					}
+					
+				}
+				
+				}
 			}
 			
 			//end for loop
 	//return the neighborhood density
-	return density;
+
 }
 
 
