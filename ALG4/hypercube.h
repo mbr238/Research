@@ -66,7 +66,7 @@ void create_Hypercubes(DTYPE *values, Hypercube **array, int b)
 			{		
 			if(values[i] > 4)
 			{
-			tempVal = (int)(floor(values[i] / 100.0));
+			tempVal = (int)(values[i] / 100.0);
 			}
 			else
 			{
