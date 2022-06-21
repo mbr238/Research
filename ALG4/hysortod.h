@@ -42,6 +42,13 @@ void HYsortOD(int bins, DTYPE *outlierArray, DTYPE **dataset, Hypercube **array,
 	DTYPE density, result;	
 	
 	//processing
+	
+		//set the outlier array originally to 0s 
+		for(int i = 0; i < N; i++)
+		{
+		outlierArray[i] = 0.0;
+		}
+	
 		//create the hypercubes
 			for(int i = 0; i < N; i++)
 			{
@@ -60,14 +67,14 @@ void HYsortOD(int bins, DTYPE *outlierArray, DTYPE **dataset, Hypercube **array,
 		DTYPE *W = (DTYPE*)malloc(sizeof(DTYPE*)*N);
 	    
 		//initialize the density arrayss to 0s
-		for(int i = 0; i < pow(bins - 1, DIM); i++)
+		for(int i = 0; i < N; i++)
 		{
 				W[i] = 0.0;
 		}
 		
 		
 		//iterate through the hypercube array for each hypercube
-		for(int i = 0; i < pow(bins - 1, DIM); i++)
+		for(int i = 0; i < N; i++)
 		{
 			
 				//if the hypercube is initialized
@@ -86,10 +93,10 @@ void HYsortOD(int bins, DTYPE *outlierArray, DTYPE **dataset, Hypercube **array,
 		//end for
 	
 		//calclate the largest density value
-		DTYPE Wmax = max(W, pow(bins - 1, DIM));
+		DTYPE Wmax = max(W, N);
 		
 		//for reach datapoint within the dataset
-			for(int index = 0; index < pow(bins - 1, DIM); index++)
+			for(int index = 0; index < N; index++)
 			{
 				//if the hypercube is initialized
 				if(array[index] != NULL)
@@ -110,7 +117,7 @@ void HYsortOD(int bins, DTYPE *outlierArray, DTYPE **dataset, Hypercube **array,
 				}
 			}
 		//end for
-		
+		free(W);
 		//end program
 }
 
