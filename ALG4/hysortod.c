@@ -23,12 +23,12 @@ int main(int argc, char **argv)
 	DTYPE *outlierArray = (DTYPE*)malloc(sizeof(DTYPE*)*arrSize);
 	DTYPE **dataset;
 	//DTYPE max = 0, min = 0;
-	Hypercube **array = malloc(sizeof(Hypercube)*arrSize);
+	Hypercube **array = (Hypercube**)malloc(sizeof(Hypercube)*arrSize);
 
 	
 	
 	//initialize array to null initially
- 	for(i = 0; i < N; i++)
+ 	for(i = 0; i < arrSize; i++)
 	{
 	array[i] = NULL;
 	}
@@ -39,22 +39,17 @@ int main(int argc, char **argv)
 		{
 		dataset[i]=(DTYPE*)malloc(sizeof(DTYPE)*DIM);
 		}	
-		
-		
-	//import the data set
-	importDataset(inputFname, N, dataset);	
-
-	//set the outlier array originally to 0s 
-		for(int i = 0; i < pow(bins - 1, DIM); i++)
-		{
-		outlierArray[i] = 0.0;
-		}	
-		
+			
+	
 	//get the max and min of the dataset
 	//max = getMax(dataset, N);
 		
 	//min = getMin(dataset, N);
-
+	
+	
+	//import the data set
+	importDataset(inputFname, N, dataset);	
+	
 	
 	//start the timer
 	clock_t start, end;
@@ -74,7 +69,7 @@ int main(int argc, char **argv)
 
 	
 	//iterate through the outlier array
-	for(int i = 0; i < pow(bins - 1, DIM); i++)
+	for(int i = 0; i < arrSize; i++)
 	{
 			//if the outlier array spot is not equal to 0( aka not initialized)
 			if(array[i] != NULL)
@@ -85,7 +80,18 @@ int main(int argc, char **argv)
 
 	}
 	
-	
+		
+	  //free dataset
+	  for (int i=0; i<N; i++)
+	  {
+		free(dataset[i]);
+		free(array[i]);
+	  }
+
+	  free(dataset);	
+	  free(array);
+	  free(outlierArray);
+	  
 	printf("Time used : %f\n", cpu_time_used);		
 	printf("End program!");
 	return 0;
