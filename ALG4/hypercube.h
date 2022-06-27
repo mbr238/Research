@@ -32,54 +32,66 @@ uint64_t getLinearID(unsigned int * indexes, unsigned int * dimLen, unsigned int
 
 
 
-void create_Hypercubes(DTYPE *values, Hypercube **array, int b)
+void create_Hypercubes(DTYPE **dataset, Hypercube **array, int b, int N)
 {
 	//initialize variables
 		//create a new hypercube based off of values
-		Hypercube *newCube = malloc(sizeof(Hypercube));
-		newCube->countings = 0;
 		bool initFlag = true;
-		int tempVal = 0, initVal = 0;
+		int initVal = 0;
 		unsigned int tempVals[DIM];
         unsigned int dim[DIM];
-		
+
 		for(int i = 0; i < DIM; i++)
 		{
 			dim[i] = b;
 		}
 		
 	//processing	
+		for(int i = 0; i < N; i++)
+			{		
+				for(int k = 0; k < DIM; k++)
+				{
+				if((int)dataset[i][k] > b)
+				{
+				tempVals[k] = (int)dataset[i][k] / 100;	
+				
+				}
+				else
+				{
+				tempVals[k] = (int)dataset[i][k];	
+				}
+				}
+				
 		//check if the dataset we are working with is not negative numbers
 		for(int i = 0; i < DIM; i++)
 		{
-			if(values[i] < 0.0)
+			if((int)tempVals[i] < 0)
 			{
 				initFlag = false;
-				free(newCube);
-			}
-		}
-			if(initFlag)
-			{
-			
-			//get the spot that is going to be initialized if not already
-			for(int i = 0; i < DIM; i++)
-			{		
-			if(values[i] > 4)
-			{
-			tempVal = (int)(values[i] / 100.0);
 			}
 			else
 			{
-			tempVal = (int) values[i];
+				initFlag = true;
 			}
-			tempVals[i] = tempVal;
+		}
+			if(initFlag)
+			{			
+			initVal = getLinearID( tempVals, dim, DIM); // get loc of cube
+			if(initVal > N)
+			{
+				initVal = N - 1;
 			}
-			
-			initVal = getLinearID( tempVals, dim, DIM);
+			else if( initVal < 0)
+			{
+				initVal = 0;
+			}
 			
 			//check to see if hypercube is uninitialized aka equal to null
 			if(array[initVal] == NULL)
 				{
+				Hypercube *newCube = malloc(sizeof(Hypercube));
+				newCube->countings = 1; //set to 1 for having one value within the cube		
+				
 				//add the values to the hypercube
 				for( int i = 0; i < DIM; i++)
 				{
@@ -90,17 +102,17 @@ void create_Hypercubes(DTYPE *values, Hypercube **array, int b)
 				
 				//throw cube in array list
 				array[initVal] = newCube;
-				
 				}
 			//otherwise hypercube initialized
 			else
 				{
 				//store the new data point within the hypercube array for each instance
-				array[initVal]->countings++;
-				free(newCube);
+				array[initVal]->countings++;	
 				
 				}
 			}
+			}
+					
 	//void function
 	
 }
