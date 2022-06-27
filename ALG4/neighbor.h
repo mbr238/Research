@@ -5,7 +5,7 @@
 #include <time.h>
 #include <stdbool.h>
 #include "params.h"
-
+#include "hypercube.h"
 
 bool isProspective(Hypercube *H, Hypercube *F)
 {
@@ -38,7 +38,7 @@ void neighborhood_density(Hypercube **array, int N, DTYPE *W)
 	
 	//processing
 			//traverse the hypercube array
-			for(int i = 0; i < 25; i++)
+			for(int i = 0; i < N; i++)
 			{
 				
 				if(array[i] != NULL)
