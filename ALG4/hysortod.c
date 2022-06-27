@@ -15,68 +15,60 @@ DTYPE getMin(DTYPE **dataset, int N);
 int main(int argc, char **argv)
 {
 	//initialize variables/datasets
-	int bins = 5, i = 0, N;
+	int i = 0, N, bins = 5;
+	sscanf(argv[1],"%d",&N);	//number of lines in text
+	DTYPE **dataset;
 	char inputFname[500];
-    sscanf(argv[1],"%d",&N);	//number of lines in text
-    strcpy(inputFname,argv[2]);	// the file name
+    strcpy(inputFname,argv[2]);	// the file name	
+	//allocate memory for dataset
+	dataset=(DTYPE**)malloc(sizeof(DTYPE*)*N);
+	for (int i=0; i<N; i++)
+	{
+	dataset[i]=(DTYPE*)malloc(sizeof(DTYPE)*DIM);
+	}
+	
+	//import the data set
+	importDataset(inputFname, N, dataset);		
+	
 	int arrSize = N;
 	DTYPE *outlierArray = (DTYPE*)malloc(sizeof(DTYPE*)*arrSize);
-	DTYPE **dataset;
-	//DTYPE max = 0, min = 0;
-	Hypercube **array = (Hypercube**)malloc(sizeof(Hypercube)*arrSize);
 
+	Hypercube **array = (Hypercube**)malloc(sizeof(Hypercube)*N);
+	Hypercube **sortArray = (Hypercube**)malloc(sizeof(Hypercube)*N);	
 	
 	
 	//initialize array to null initially
- 	for(i = 0; i < arrSize; i++)
+ 	for(i = 0; i < N; i++)
 	{
 	array[i] = NULL;
 	}
-	
-	//allocate memory for dataset
-		dataset=(DTYPE**)malloc(sizeof(DTYPE*)*N);
-		for (int i=0; i<N; i++)
-		{
-		dataset[i]=(DTYPE*)malloc(sizeof(DTYPE)*DIM);
-		}	
-			
-	
-	//get the max and min of the dataset
-	//max = getMax(dataset, N);
 		
 	//min = getMin(dataset, N);
-	
-	
-	//import the data set
-	importDataset(inputFname, N, dataset);	
-	
-	
+
 	//start the timer
 	clock_t start, end;
 	DTYPE cpu_time_used;
 	start = clock();
 	
 	//perform outlier algorithm
-	HYsortOD(bins, outlierArray, dataset, array, N);
+	HYsortOD(outlierArray, dataset, array, sortArray, N, bins);
 	
 	//end timer
 	end = clock();
 	cpu_time_used = ((DTYPE) (end - start)) / CLOCKS_PER_SEC;
 	//print how long it took to calculate outliers
 	
-		
-
-
-	
 	//iterate through the outlier array
 	for(int i = 0; i < arrSize; i++)
 	{
 			//if the outlier array spot is not equal to 0( aka not initialized)
-			if(array[i] != NULL)
+			while(sortArray[i] != NULL)
 			{
 			//print out the outlier score to that hypercube
 			printf(" position: [%d]: Outlier Score: %lf\n",i,outlierArray[i]);
+			i++;
 			}
+			
 
 	}
 	
@@ -85,12 +77,11 @@ int main(int argc, char **argv)
 	  for (int i=0; i<N; i++)
 	  {
 		free(dataset[i]);
-		free(array[i]);
 	  }
 
 	  free(dataset);	
-	  free(array);
 	  free(outlierArray);
+	  free(sortArray);
 	  
 	printf("Time used : %f\n", cpu_time_used);		
 	printf("End program!");
@@ -130,15 +121,15 @@ DTYPE getMin(DTYPE **dataset, int N)
 	DTYPE min = 0.0;
 	
 	//processing
-		//assume first one is max
+		//assume first one is min
 		min = dataset[0][0];
 		
-		//loop through dataset to find max
+		//loop through dataset to find min
 		for(int i = 0; i < N; i++)
 		{
 			for(int j = 0; j < DIM; j++)
 			{
-				//check if the value is max value
+				//check if the value is min value
 				if(dataset[i][j] > 0 && dataset[i][j] < min)
 				{
 					min = dataset[i][j];
