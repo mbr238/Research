@@ -15,7 +15,7 @@
 //data structure
 typedef struct Hypercube{
 	int coords[DIM];
-	double countings;
+	int countings;
 	
 }Hypercube;
 
@@ -37,13 +37,13 @@ void create_Hypercubes(DTYPE **dataset, Hypercube **array, int b, int N)
 	//initialize variables
 		//create a new hypercube based off of values
 		bool initFlag = true;
-		int initVal = 0;
+		uint64_t initVal = 0;
 		unsigned int tempVals[DIM];
         unsigned int dim[DIM];
 
 		for(int i = 0; i < DIM; i++)
 		{
-			dim[i] = b;
+			dim[i] = 5;
 		}
 		
 	//processing	
