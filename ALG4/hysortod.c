@@ -62,13 +62,12 @@ int main(int argc, char **argv)
 	for(int i = 0; i < arrSize; i++)
 	{
 			//if the outlier array spot is not equal to 0( aka not initialized)
-			while(sortArray[i] != NULL)
+			if(sortArray[i] != NULL)
 			{
 			//print out the outlier score to that hypercube
 			printf("%lf\n",outlierArray[i]);
 			i++;
 			}
-			
 
 	}
 	  //free dataset
