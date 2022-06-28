@@ -68,6 +68,7 @@ void create_Hypercubes(DTYPE **dataset, Hypercube **array, int b, int N)
 			if((int)tempVals[i] < 0)
 			{
 				initFlag = false;
+				break;
 			}
 			else
 			{
@@ -90,13 +91,12 @@ void create_Hypercubes(DTYPE **dataset, Hypercube **array, int b, int N)
 			if(array[initVal] == NULL)
 				{
 				Hypercube *newCube = malloc(sizeof(Hypercube));
-				newCube->countings = 1; //set to 1 for having one value within the cube		
+				newCube->countings = 0; //set to 1 for having one value within the cube		
 				
 				//add the values to the hypercube
 				for( int i = 0; i < DIM; i++)
 				{
 					newCube->coords[i] = tempVals[i]; 
-					
 				}
 				newCube->countings++;
 				
