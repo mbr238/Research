@@ -35,7 +35,7 @@ void sort(Hypercube **array, int N)
 			{
 				break;
 			}
-			for(int j = 1; j < N; j++)
+			for(int j = 0; j < N; j++)
 			{
 				if(array[j] == NULL)
 				{
