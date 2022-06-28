@@ -58,7 +58,7 @@ void HYsortOD(DTYPE *outlierArray, DTYPE **dataset, Hypercube **array, Hypercube
 		//sort the hypercubes
 		sortCube(array, sortArray, N);
 		free(array);
-		
+		sort(sortArray, N);
 		
 		//create an empty density array W
 		DTYPE *W = (DTYPE*)malloc(sizeof(DTYPE*)*N);
