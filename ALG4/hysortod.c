@@ -65,14 +65,12 @@ int main(int argc, char **argv)
 			while(sortArray[i] != NULL)
 			{
 			//print out the outlier score to that hypercube
-			printf(" position: [%d]: Outlier Score: %lf\n",i,outlierArray[i]);
+			printf("%lf\n",outlierArray[i]);
 			i++;
 			}
 			
 
 	}
-	
-		
 	  //free dataset
 	  for (int i=0; i<N; i++)
 	  {
