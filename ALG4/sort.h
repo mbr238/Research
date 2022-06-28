@@ -18,7 +18,7 @@ bool compareCubes(Hypercube *H, Hypercube *F)
 	{
 		if(H->coords[i] < F->coords[i] )
 		{
-			return true;
+		return true;
 		}
 		
 	}
