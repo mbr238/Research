@@ -68,9 +68,16 @@ void sortCube(Hypercube **array, Hypercube **sortArray, int N)
 			index++;
 			cubeIndex++;
 		}
-		else if(array[cubeIndex] == NULL && array[cubeIndex + 1] == NULL)
+		else if(array[cubeIndex] == NULL)
 		{
-			break;
+			for(int j = cubeIndex; j < N; j++)
+			{
+				if(array[j] != NULL)
+				{
+				cubeIndex = j;
+				break;
+				}
+			}
 		}
 		else
 		{
