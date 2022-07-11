@@ -43,7 +43,7 @@ void create_Hypercubes(DTYPE **dataset, Hypercube **array, int b, int N)
 
 		for(int i = 0; i < DIM; i++)
 		{
-			dim[i] = 5;
+			dim[i] = 1;
 		}
 		
 	//processing	
