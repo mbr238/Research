@@ -70,7 +70,7 @@ void HYsortOD(DTYPE *outlierArray, DTYPE **dataset, Hypercube **array, Hypercube
 		}
 		
 		//calculate neighborhood densities
-			neighborhood_density(sortArray, N, W);
+		neighborhood_density(sortArray, N, W);
 
 	
 		//calclate the largest density value
