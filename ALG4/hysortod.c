@@ -43,7 +43,6 @@ int main(int argc, char **argv)
 	array[i] = NULL;
 	}
 		
-	//min = getMin(dataset, N);
 
 	//start the timer
 	clock_t start, end;
@@ -66,7 +65,7 @@ int main(int argc, char **argv)
 			{
 			//print out the outlier score to that hypercube
 			printf("%lf\n",outlierArray[i]);
-			i++;
+			
 			}
 
 	}
