@@ -30,6 +30,8 @@ int main(int argc, char **argv)
 	//import the data set
 	importDataset(inputFname, N, dataset);		
 	
+	normalize(dataset, getMax(dataset, N), getMin(dataset,N), N);
+	
 	int arrSize = N;
 	DTYPE *outlierArray = (DTYPE*)malloc(sizeof(DTYPE*)*arrSize);
 
@@ -80,7 +82,7 @@ int main(int argc, char **argv)
 	  free(sortArray);
 	  
 	printf("Time used : %f\n", cpu_time_used);		
-	printf("End program!");
+	printf("End program!\n");
 	return 0;
 }
 
