@@ -36,14 +36,14 @@ void create_Hypercubes(DTYPE **dataset, Hypercube **array, int b, int N)
 {
 	//initialize variables
 		//create a new hypercube based off of values
-		bool initFlag = true;
 		uint64_t initVal = 0;
 		unsigned int tempVals[DIM];
         unsigned int dim[DIM];
-
+		double length = 1.0/b;
+		
 		for(int i = 0; i < DIM; i++)
 		{
-			dim[i] = 1;
+			dim[i] = b;
 		}
 		
 	//processing	
@@ -51,42 +51,20 @@ void create_Hypercubes(DTYPE **dataset, Hypercube **array, int b, int N)
 			{		
 				for(int k = 0; k < DIM; k++)
 				{
-				if((int)dataset[i][k] > b)
-				{
-				tempVals[k] = (int)dataset[i][k] / 100;	
-				
-				}
-				else
-				{
-				tempVals[k] = (int)dataset[i][k];	
-				}
+				tempVals[k] = (int)(floor(dataset[i][k] / length));	
 				}
 				
-		//check if the dataset we are working with is not negative numbers
-		for(int i = 0; i < DIM; i++)
-		{
-			if((int)tempVals[i] < 0)
-			{
-				initFlag = false;
-				break;
-			}
-			else
-			{
-				initFlag = true;
-			}
-		}
-			if(initFlag)
-			{			
-			initVal = getLinearID( tempVals, dim, DIM); // get loc of cube
+		//check if the dataset we are working with is not negative numbers			
+			initVal = getLinearID( tempVals, dim, DIM - 1); // get loc of cube
+			
 			if(initVal > N)
 			{
-				initVal = N - 1;
+				initVal = N;
 			}
-			else if( initVal < 0)
+			else if(initVal < 0)
 			{
 				initVal = 0;
 			}
-			
 			//check to see if hypercube is uninitialized aka equal to null
 			if(array[initVal] == NULL)
 				{
@@ -111,7 +89,7 @@ void create_Hypercubes(DTYPE **dataset, Hypercube **array, int b, int N)
 				
 				}
 			}
-			}
+
 					
 	//void function
 	
