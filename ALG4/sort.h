@@ -88,16 +88,55 @@ void sortCube(Hypercube **array, Hypercube **sortArray, int N)
 }
 		
 		
+double mins(DTYPE otherVal, DTYPE value)
+{
+	if(otherVal < 0 || value < 0)
+	{
+		return 0;
+	}
+	if(value < otherVal)
+	{
+		return value;
+	}
+	return otherVal;
+}
+		
+double maxs(DTYPE otherVal, DTYPE value)
+{
+	if(value > otherVal)
+	{
+		return value;
+	}
+	return otherVal;
+}	
+
 
 void normalize(DTYPE **dataset, double max, double min, int N)
 {
 	
-	for(int i = 0; i < N; i++)
+	for(int i = 0; i < DIM - 1; i++)
 	{
-		for(int k = 0; k < DIM - 1; k++)
+		double minVal = 1.7976931348623157E+308;
+		double maxVal = 0.0;
+		for(int j = 0; j < N; j++)
 		{
-			dataset[i][k] = (dataset[i][k] - min) / (max - min);
+			minVal = mins(dataset[j][i], minVal);
+			maxVal = maxs(dataset[j][i], maxVal);
 		}
+		
+		for(int k = 0; k < N; k++)
+		{
+			double value = (dataset[k][i] - minVal) / ( maxVal - minVal);
+			if(value < 0)
+			{
+				dataset[k][i] = 0.0;
+			}
+			else
+			{
+			dataset[k][i] = value;
+			}
+		}
+		
 	}
 	
 }
