@@ -19,6 +19,29 @@ typedef struct Hypercube{
 	
 }Hypercube;
 
+
+bool compare( int *coordsOne, int *coordsTwo)
+{
+	int coordOne, coordTwo;
+	for(int i = 0; i < DIM - 1; i++)
+	{
+		coordOne += coordsOne[i];
+		coordTwo += coordsTwo[i];
+		
+	}
+	
+	if(coordOne < coordTwo)
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+		
+		
+		
 uint64_t getLinearID(unsigned int * indexes, unsigned int * dimLen, unsigned int nDimensions) {
     uint64_t offset = 0;
 	uint64_t multiplier = 1;
@@ -29,8 +52,6 @@ uint64_t getLinearID(unsigned int * indexes, unsigned int * dimLen, unsigned int
 	
 	return offset;
 }
-
-
 
 void create_Hypercubes(DTYPE **dataset, Hypercube **array, int b, int N)
 {
@@ -46,38 +67,38 @@ void create_Hypercubes(DTYPE **dataset, Hypercube **array, int b, int N)
 			dim[i] = b;
 		}
 		
+		
 	//processing	
 		for(int i = 0; i < N; i++)
 			{		
-				for(int k = 0; k < DIM; k++)
+				for(int k = 0; k < DIM - 1; k++)
+				{
+				if( dataset[i][k] < 0 )
+				{
+					tempVals[k] = 0;
+				}
+				else
 				{
 				tempVals[k] = (int)(floor(dataset[i][k] / length));	
-				}
+				}				
+				}	
 				
 		//check if the dataset we are working with is not negative numbers			
 			initVal = getLinearID( tempVals, dim, DIM - 1); // get loc of cube
 			
-			if(initVal > N)
-			{
-				initVal = N;
-			}
-			else if(initVal < 0)
-			{
-				initVal = 0;
-			}
 			//check to see if hypercube is uninitialized aka equal to null
 			if(array[initVal] == NULL)
 				{
 				Hypercube *newCube = malloc(sizeof(Hypercube));
-				newCube->countings = 0; //set to 1 for having one value within the cube		
+				newCube->countings = 1; //set to 1 for having one value within the cube		
 				
 				//add the values to the hypercube
-				for( int i = 0; i < DIM; i++)
+				for( int i = 0; i < DIM - 1; i++)
 				{
 					newCube->coords[i] = tempVals[i]; 
+					printf("%d,",tempVals[i]);
 				}
-				newCube->countings++;
-				
+				printf("\n");
 				//throw cube in array list
 				array[initVal] = newCube;
 				}
