@@ -58,11 +58,11 @@ void create_Hypercubes(DTYPE **dataset, Hypercube **array, int b, int N)
 	//initialize variables
 		//create a new hypercube based off of values
 		uint64_t initVal = 0;
-		unsigned int tempVals[DIM];
-        unsigned int dim[DIM];
+		unsigned int tempVals[DIM - 1];
+        unsigned int dim[DIM - 1];
 		double length = 1.0/b;
 		
-		for(int i = 0; i < DIM; i++)
+		for(int i = 0; i < DIM - 1; i++)
 		{
 			dim[i] = b;
 		}
@@ -75,7 +75,7 @@ void create_Hypercubes(DTYPE **dataset, Hypercube **array, int b, int N)
 				{
 				if( dataset[i][k] < 0 )
 				{
-					tempVals[k] = 0;
+					tempVals[k] = (int)(abs(floor(dataset[i][k] / length)));
 				}
 				else
 				{
