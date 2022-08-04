@@ -127,14 +127,7 @@ void normalize(DTYPE **dataset, double max, double min, int N)
 		for(int k = 0; k < N; k++)
 		{
 			double value = (dataset[k][i] - minVal) / ( maxVal - minVal);
-			if(value < 0)
-			{
-				dataset[k][i] = 0.0;
-			}
-			else
-			{
 			dataset[k][i] = value;
-			}
 		}
 		
 	}
