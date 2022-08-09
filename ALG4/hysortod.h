@@ -41,7 +41,7 @@ DTYPE maxx(DTYPE *W, int bins)
 void HYsortOD(DTYPE *outlierArray, DTYPE **dataset, Hypercube **array, Hypercube **sortArray, int N, int b)
 {
 	//initialize program	
-
+	int cubes;
 	
 	//processing
 	
@@ -53,10 +53,10 @@ void HYsortOD(DTYPE *outlierArray, DTYPE **dataset, Hypercube **array, Hypercube
 		
 		
 		//create the hypercubes
-		create_Hypercubes( dataset, array, b, N);	
+		cubes = create_Hypercubes( dataset, array, b, N);	
 				
 		//sort the hypercubes
-		sortCube(array, sortArray, N);
+		sortCube(array, sortArray, N, cubes);
 		free(array);
 		sort(sortArray, N);
 		
