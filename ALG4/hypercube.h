@@ -53,7 +53,7 @@ uint64_t getLinearID(unsigned int * indexes, unsigned int * dimLen, unsigned int
 	return offset;
 }
 
-void create_Hypercubes(DTYPE **dataset, Hypercube **array, int b, int N)
+int create_Hypercubes(DTYPE **dataset, Hypercube **array, int b, int N)
 {
 	//initialize variables
 		//create a new hypercube based off of values
@@ -61,7 +61,7 @@ void create_Hypercubes(DTYPE **dataset, Hypercube **array, int b, int N)
 		unsigned int tempVals[DIM - 1];
         unsigned int dim[DIM - 1];
 		double length = 1.0/b;
-		
+		int cubes = 0;
 		for(int i = 0; i < DIM - 1; i++)
 		{
 			dim[i] = b;
@@ -96,9 +96,9 @@ void create_Hypercubes(DTYPE **dataset, Hypercube **array, int b, int N)
 				for( int i = 0; i < DIM - 1; i++)
 				{
 					newCube->coords[i] = tempVals[i]; 
-					printf("%d,",tempVals[i]);
 				}
-				printf("\n");
+				cubes++;
+				
 				//throw cube in array list
 				array[initVal] = newCube;
 				}
@@ -112,7 +112,7 @@ void create_Hypercubes(DTYPE **dataset, Hypercube **array, int b, int N)
 			}
 
 					
-	//void function
+	return cubes;
 	
 }
 	
