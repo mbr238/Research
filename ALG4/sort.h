@@ -56,10 +56,11 @@ void sort(Hypercube **array, int N)
 
 //sort the hypercubes in ascending order
 
-void sortCube(Hypercube **array, Hypercube **sortArray, int N)
+void sortCube(Hypercube **array, Hypercube **sortArray, int N, int cubes)
 {
 	int index = 0;
 	int cubeIndex = 0;
+	int cube = 0;
 	
 	for(cubeIndex = 0; cubeIndex < N; cubeIndex++)
 	{
@@ -67,6 +68,10 @@ void sortCube(Hypercube **array, Hypercube **sortArray, int N)
 		{
 			for(int j = cubeIndex; j < N; j++)
 			{
+				if(cube == cubes)
+				{
+				break;
+				}
 				if(array[j] != NULL)
 				{
 				cubeIndex = j;
@@ -76,6 +81,7 @@ void sortCube(Hypercube **array, Hypercube **sortArray, int N)
 		}
 		if(array[cubeIndex] != NULL)
 		{
+			cube++;
 			sortArray[index] = array[cubeIndex];
 			index++;
 		}
@@ -110,27 +116,31 @@ double maxs(DTYPE otherVal, DTYPE value)
 	return otherVal;
 }	
 
+//wrong normalization, do original method first
 
 void normalize(DTYPE **dataset, double max, double min, int N)
 {
+	double minVal = 1.7976931348623157E+308;
+	double maxVal = 0.0;	
 	
 	for(int i = 0; i < DIM - 1; i++)
 	{
-		double minVal = 1.7976931348623157E+308;
-		double maxVal = 0.0;
 		for(int j = 0; j < N; j++)
 		{
 			minVal = mins(dataset[j][i], minVal);
 			maxVal = maxs(dataset[j][i], maxVal);
 		}
 		
-		for(int k = 0; k < N; k++)
-		{
-			double value = (dataset[k][i] - minVal) / ( maxVal - minVal);
-			dataset[k][i] = value;
-		}
 		
 	}
+		for(int i = 0; i < N; i++)
+		{
+			for(int k = 0; k < DIM - 1; k++)
+			{
+				double value = (dataset[i][k] - minVal) / ( maxVal - minVal);
+				dataset[i][k] = value;
+			}
+		}
 	
 }
 
