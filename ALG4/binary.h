@@ -7,7 +7,7 @@
 
 
 typedef struct node{
-	
+    length_array = sizeof(hypercubes)
 }node;
 
     int i;
@@ -20,13 +20,18 @@ bool sort(Hypercube **array, int N) {
 		int node;
 		while (low <= high ) {
             int mid = (low + high) / 2;
-			if (Hypercube **array >= Key) {
+			if (cubes_length >= Key) {
 				low = mid + 1;
 			}
 			else if (Hypercube **array <= Key) {
 				high = mid - 1;
 			}
+            else
+            {
+                return false;
+            }
 		}
+        return true;
 	}
 	
 }
