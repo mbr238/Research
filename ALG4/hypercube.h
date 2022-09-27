@@ -10,6 +10,8 @@
 #include "params.h"
 #include <stdbool.h>
 #include <stdint.h>
+#include <time.h>
+#include <omp.h>
 
 
 //data structure
@@ -19,10 +21,22 @@ typedef struct Hypercube{
 	
 }Hypercube;
 
+bool similarCube(Hypercube *F, Hypercube *H)
+{
+	for(int i = 0; i < DIM; i++)
+	{
+		if(abs(H->coords[i] - F->coords[i]) > 0)
+		{
+			return false;
+		}	
+	}
+	return true;
+}
+
 
 bool compare( int *coordsOne, int *coordsTwo)
 {
-	int coordOne, coordTwo;
+	int coordOne = 0, coordTwo = 0;
 	for(int i = 0; i < DIM - 1; i++)
 	{
 		coordOne += coordsOne[i];
@@ -30,7 +44,7 @@ bool compare( int *coordsOne, int *coordsTwo)
 		
 	}
 	
-	if(coordOne < coordTwo)
+	if(coordOne == coordTwo)
 	{
 		return true;
 	}
@@ -38,6 +52,36 @@ bool compare( int *coordsOne, int *coordsTwo)
 	{
 		return false;
 	}
+}
+
+
+void combineCubes(Hypercube **array,  Hypercube **wholeList, int N, int cubes)
+{
+	//initialize variables
+	omp_set_num_threads(NTHREADS);
+	int countings = 0;
+	
+	//processing
+	//#pragma omp parallel
+	//{
+		//#pragma omp for
+		for(int index = 0; index < cubes; index++)
+		{
+			countings = 0;
+			
+			for(int i = 0; i < N; i++)
+			{
+				if(compare(array[index]->coords, wholeList[i]->coords))
+				{
+					countings++;
+				}
+			}
+		array[index]->countings = countings;
+		
+		}
+		
+	//}
+	//return nothing void
 }
 		
 		
@@ -53,25 +97,32 @@ uint64_t getLinearID(unsigned int * indexes, unsigned int * dimLen, unsigned int
 	return offset;
 }
 
-int create_Hypercubes(DTYPE **dataset, Hypercube **array, int b, int N)
+int create_Hypercubes(DTYPE **dataset, int b, int N, Hypercube **array, Hypercube **wholeList)
 {
 	//initialize variables
 		//create a new hypercube based off of values
 		uint64_t initVal = 0;
-		unsigned int tempVals[DIM - 1];
-        unsigned int dim[DIM - 1];
+		unsigned int tempVals[DIM];
+        unsigned int dim[DIM];
 		double length = 1.0/b;
-		int cubes = 0;
-		for(int i = 0; i < DIM - 1; i++)
+		int cubes = 0, index = 0;	
+		
+		for(int k = 0; k < N; k++)
+		{
+			array[k] = NULL;
+			wholeList[k] = NULL;
+		}
+		
+		for(int i = 0; i < DIM; i++)
 		{
 			dim[i] = b;
 		}
-		
+			
 		
 	//processing	
 		for(int i = 0; i < N; i++)
 			{		
-				for(int k = 0; k < DIM - 1; k++)
+				for(int k = 0; k < DIM; k++)
 				{
 				if( dataset[i][k] < 0 )
 				{
@@ -83,39 +134,42 @@ int create_Hypercubes(DTYPE **dataset, Hypercube **array, int b, int N)
 				}				
 				}	
 				
+			Hypercube *newCube = malloc(sizeof(Hypercube*));
+
+				
+			//add the values to the hypercube
+				for( int i = 0; i < DIM; i++)
+				{
+					newCube->coords[i] = tempVals[i]; 
+				}
+			newCube->countings = 0; 	
+			
 		//check if the dataset we are working with is not negative numbers			
-			initVal = getLinearID( tempVals, dim, DIM - 1); // get loc of cube
+			initVal = getLinearID( tempVals, dim, DIM); // get loc of cube
+					
+			wholeList[index] = newCube;	
+			index++;
+			
+			//could sort list later using a paralllel program pulling out unique cubes
 			
 			//check to see if hypercube is uninitialized aka equal to null
 			if(array[initVal] == NULL)
 				{
-				Hypercube *newCube = malloc(sizeof(Hypercube));
-				newCube->countings = 1; //set to 1 for having one value within the cube		
-				
-				//add the values to the hypercube
-				for( int i = 0; i < DIM - 1; i++)
-				{
-					newCube->coords[i] = tempVals[i]; 
-				}
 				cubes++;
 				
 				//throw cube in array list
 				array[initVal] = newCube;
-				}
-			//otherwise hypercube initialized
-			else
-				{
-				//store the new data point within the hypercube array for each instance
-				array[initVal]->countings++;	
 				
 				}
+			
 			}
-
-					
+			
+			
 	return cubes;
-	
 }
-	
+
+//create two arrays, one array is sequential putting linID/coords in a cube into an array
+// and the other array is each unique cube that will be paralleled to find similar cubes in the first array
 
 int importDataset(char * fname, int N, DTYPE ** dataset)
 {
