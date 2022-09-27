@@ -2,6 +2,7 @@
 #include "hysortod.h"
 #include "params.h"
 
+
 //global constants
 
 
@@ -19,7 +20,9 @@ int main(int argc, char **argv)
 	sscanf(argv[1],"%d",&N);	//number of lines in text
 	DTYPE **dataset;
 	char inputFname[500];
-    strcpy(inputFname,argv[2]);	// the file name	
+    strcpy(inputFname,argv[2]);	// the file name
+	int cube = 0;
+	
 	//allocate memory for dataset
 	dataset=(DTYPE**)malloc(sizeof(DTYPE*)*N);
 	for (int i=0; i<N; i++)
@@ -36,7 +39,6 @@ int main(int argc, char **argv)
 	DTYPE *outlierArray = (DTYPE*)malloc(sizeof(DTYPE*)*arrSize);
 
 	Hypercube **array = (Hypercube**)malloc(sizeof(Hypercube)*N);
-	Hypercube **sortArray = (Hypercube**)malloc(sizeof(Hypercube)*N);	
 	
 	
 	//initialize array to null initially
@@ -52,37 +54,31 @@ int main(int argc, char **argv)
 	start = clock();
 	
 	//perform outlier algorithm
-	HYsortOD(outlierArray, dataset, array, sortArray, N, bins);
+	cube = HYsortOD(outlierArray, dataset, array, N, bins);
 	
 	//end timer
 	end = clock();
 	cpu_time_used = ((DTYPE) (end - start)) / CLOCKS_PER_SEC;
-	//print how long it took to calculate outliers
 	
 	//iterate through the outlier array
-	for(int i = 0; i < arrSize; i++)
+	for(int i = 0; i < cube; i++)
 	{
-			//if the outlier array spot is not equal to 0( aka not initialized)
-			if(sortArray[i] != NULL)
-			{
 			//print out the outlier score to that hypercube
 			printf("%lf\n",outlierArray[i]);
 			
-			}
-
 	}
+	
 	  //free dataset
 	  for (int i=0; i<N; i++)
 	  {
 		free(dataset[i]);
 	  }
-
-	  free(dataset);	
-	  free(outlierArray);
-	  free(sortArray);
+	  
+	  free(dataset);  
+	  free(outlierArray);	
 	  
 	printf("Time used : %f\n", cpu_time_used);		
-	printf("End program!\n");
+	printf("End program!\n"); 
 	return 0;
 }
 
