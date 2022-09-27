@@ -6,6 +6,7 @@
 #include <stdbool.h>
 #include "params.h"
 #include "hypercube.h"
+#include "omp.h"
 
 bool isProspective(Hypercube *H, Hypercube *F)
 {
@@ -35,20 +36,19 @@ bool isImmediate(Hypercube *H, Hypercube *F)
 void neighborhood_density(Hypercube **array, int N, DTYPE *W)
 {
 	//initialize program
+	omp_set_num_threads(NTHREADS);
 	
 	//processing
 			//traverse the hypercube array
+			#pragma omp parallel
+			{	
+			#pragma omp for
 			for(int i = 0; i < N; i++)
 			{
-				
-				if(array[i] != NULL)
-				{
 				W[i] = array[i]->countings;
 				
 				for(int k = i - 1; k >= 0; k--)
 				{
-					if(array[k] != NULL)
-					{
 					if(!isProspective(array[i],array[k]))
 					{
 						break;
@@ -56,14 +56,11 @@ void neighborhood_density(Hypercube **array, int N, DTYPE *W)
 					if(isImmediate(array[i],array[k]))
 					{
 						W[i] += array[k]->countings;
-					}
-					}
-					
+					}	
 				}	
+				
 				for(int k = i + 1; k < N; k++)
 				{
-					if(array[k] != NULL)
-					{
 					if(!isProspective(array[i],array[k]))
 					{
 						break;
@@ -74,11 +71,10 @@ void neighborhood_density(Hypercube **array, int N, DTYPE *W)
 					}
 					}
 					
-				}
 				
 				}
+				
 			}
-			
 			//end for loop
 	//return the neighborhood density
 
