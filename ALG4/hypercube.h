@@ -25,7 +25,7 @@ bool similarCube(Hypercube *F, Hypercube *H)
 {
 	for(int i = 0; i < DIM; i++)
 	{
-		if(abs(H->coords[i] - F->coords[i]) > 0)
+		if(abs(H->coords[i] - F->coords[i]) != 0)
 		{
 			return false;
 		}	
@@ -67,11 +67,11 @@ void combineCubes(Hypercube **array,  Hypercube **wholeList, int N, int cubes)
 		#pragma omp for
 		for(int index = 0; index < cubes; index++)
 		{
-			countings = 0;
+			countings = array[index]->countings;
 			
 			for(int i = 0; i < N; i++)
 			{
-				if(compare(array[index]->coords, wholeList[i]->coords))
+				if(similarCube(array[index], wholeList[i]))
 				{
 					countings++;
 				}
