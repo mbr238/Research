@@ -9,6 +9,7 @@
 #include "sort.h"
 
 
+
 //prototypes
 DTYPE myScore(DTYPE density, DTYPE densityMax)
 {
@@ -38,10 +39,10 @@ DTYPE maxx(DTYPE *W, int bins)
 
 //hysortod function retruns an array of outlierness in parameters
 											//same size as dataset -- outlierarray
-void HYsortOD(DTYPE *outlierArray, DTYPE **dataset, Hypercube **array, Hypercube **sortArray, int N, int b)
+int HYsortOD(DTYPE *outlierArray, DTYPE **dataset, Hypercube **array, int N, int b)
 {
 	//initialize program	
-	int cubes;
+	int cubes = 0;
 	
 	//processing
 	
@@ -50,52 +51,49 @@ void HYsortOD(DTYPE *outlierArray, DTYPE **dataset, Hypercube **array, Hypercube
 		{
 		outlierArray[i] = 0.0;
 		}
-		
+		Hypercube **wholeList = (Hypercube**)malloc(sizeof(Hypercube)*N);	
 		
 		//create the hypercubes
-		cubes = create_Hypercubes( dataset, array, b, N);	
-				
-		//sort the hypercubes
+		cubes = create_Hypercubes( dataset, b, N, array, wholeList);
+		Hypercube **sortArray = (Hypercube**)malloc(sizeof(Hypercube)*cubes);
+			
 		sortCube(array, sortArray, N, cubes);
 		free(array);
-		sort(sortArray, N);
+	
+		combineCubes(sortArray, wholeList, N, cubes);		
+		sort(sortArray, cubes);		
 		
 		//create an empty density array W
-		DTYPE *W = (DTYPE*)malloc(sizeof(DTYPE*)*N);
+		DTYPE *W = (DTYPE*)malloc(sizeof(DTYPE*)*cubes);
 	    
 		//initialize the density arrayss to 0s
-		for(int i = 0; i < N; i++)
+		for(int i = 0; i < cubes; i++)
 		{
 				W[i] = 0.0;
 		}
 		
+		
 		//calculate neighborhood densities
-		neighborhood_density(sortArray, N, W);
-
+		neighborhood_density(sortArray, cubes, W);
+		
 	
 		//calclate the largest density value
-		DTYPE Wmax = maxx(W, N);
+		DTYPE Wmax = maxx(W, cubes);
 		
 		//for reach datapoint within the dataset
-			for(int index = 0; index < N; index++)
+			for(int index = 0; index < cubes; index++)
 			{
-				//if the hypercube is initialized
-				if(sortArray[index] != NULL)
-				{
-				//calculate the score for that datapoint within hypercubes
-				outlierArray[index] = myScore(W[index], Wmax);
-				
-				}
-				//otherwise hypercube is not initialized
-				else
-				{
-				//set the spot in outlier array to 0 for not initialized
-				outlierArray[index] = 0.0;
-				
-				}
+		
+			//calculate the score for that datapoint within hypercubes
+			outlierArray[index] = myScore(W[index], Wmax);
+			
 			}
+			
 		//end for
 		free(W);
+		free(sortArray);
+		
+		return cubes;
 		//end program
 }
 
