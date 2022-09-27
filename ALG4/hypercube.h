@@ -62,9 +62,9 @@ void combineCubes(Hypercube **array,  Hypercube **wholeList, int N, int cubes)
 	int countings = 0;
 	
 	//processing
-	//#pragma omp parallel
-	//{
-		//#pragma omp for
+	#pragma omp parallel
+	{
+		#pragma omp for
 		for(int index = 0; index < cubes; index++)
 		{
 			countings = 0;
@@ -80,7 +80,7 @@ void combineCubes(Hypercube **array,  Hypercube **wholeList, int N, int cubes)
 		
 		}
 		
-	//}
+	}
 	//return nothing void
 }
 		
