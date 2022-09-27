@@ -1,8 +1,9 @@
 #ifndef SORT_H
 #define SORT_H
 #include <stdbool.h>
-#include "hypercube.h"
 #include "params.h"
+#include "hypercube.h"
+
 
 void swap( Hypercube **arr, int i, int j)
 {
@@ -29,19 +30,10 @@ bool compareCubes(Hypercube *H, Hypercube *F)
 
 void sort(Hypercube **array, int N)
 {
-	
 		for(int i = 0; i < N; i++)
 		{
-			if(array[i] == NULL)
-			{
-				break;
-			}
 			for(int j = 0; j < N; j++)
 			{
-				if(array[j] == NULL)
-				{
-					break;
-				}
 				if(compareCubes(array[i], array[j]))
 				{
 					swap(array, i, j);
@@ -88,9 +80,6 @@ void sortCube(Hypercube **array, Hypercube **sortArray, int N, int cubes)
 		
 	}
 	
-	index++;
-	sortArray[index] = NULL;
-	
 }
 		
 		
@@ -133,9 +122,10 @@ void normalize(DTYPE **dataset, double max, double min, int N)
 		
 		
 	}
+
 		for(int i = 0; i < N; i++)
 		{
-			for(int k = 0; k < DIM - 1; k++)
+			for(int k = 0; k < DIM; k++)
 			{
 				double value = (dataset[i][k] - minVal) / ( maxVal - minVal);
 				dataset[i][k] = value;
