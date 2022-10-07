@@ -36,13 +36,9 @@ bool isImmediate(Hypercube *H, Hypercube *F)
 void neighborhood_density(Hypercube **array, int N, DTYPE *W)
 {
 	//initialize program
-	omp_set_num_threads(NTHREADS);
 	
 	//processing
 			//traverse the hypercube array
-			#pragma omp parallel
-			{	
-			#pragma omp for
 			for(int i = 0; i < N; i++)
 			{
 				W[i] = array[i]->countings;
@@ -73,8 +69,7 @@ void neighborhood_density(Hypercube **array, int N, DTYPE *W)
 					
 				
 				}
-				
-			}
+			
 			//end for loop
 	//return the neighborhood density
 
