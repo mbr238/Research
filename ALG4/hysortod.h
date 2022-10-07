@@ -82,14 +82,14 @@ int HYsortOD(DTYPE *outlierArray, DTYPE **dataset, Hypercube **array, int N, int
 		combineCubes<<<totalBlocks,1024>>>(arrays, secondArray, N, cubes);
 		
 		if(errCode != cudaSuccess){
-		cout<<"Error afrer kernel launch "<<errCode<<endl;
+		printf("Error code %d\n",errCode);
 		
 		}
 		
 		//copy the array from gpu
 		errCode=cudaMemcpy( sortArray, secondArray, sizeof(*Hypercube)*cubes, cudaMemcpyDeviceToHost);
 		if(errCode != cudaSuccess) {
-		cout << "\nError: getting result form GPU error with code " << errCode << endl; 
+		printf("Error code %d\n",errCode);
 		}
 
 		sortCube(array, sortArray, N, cubes);
