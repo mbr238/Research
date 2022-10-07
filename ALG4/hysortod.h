@@ -56,7 +56,42 @@ int HYsortOD(DTYPE *outlierArray, DTYPE **dataset, Hypercube **array, int N, int
 		//create the hypercubes
 		cubes = create_Hypercubes( dataset, b, N, array, wholeList);
 		Hypercube **sortArray = (Hypercube**)malloc(sizeof(Hypercube)*cubes);
+		
+		Hypercube **arrays = NULL, **secondArray = NULL;
+	
+		cudaError_t errCode=cudaSuccess;
+		
+		//allocate cuda memory
+		errCode=cudaMalloc((Hypercube**)&arrays, sizeof(*Hypercube)*cubes);
+		errCode=cudaMalloc((Hypercube**)&secondArray, sizeof(*Hypercube)*N);
+		
+		//copy over datasets
+		errCode=cudaMemcpy( arrays, array, sizeof(*Hypercube)*cubes, cudaMemcpyHostToDevice);
+		errCode=cudaMemcpy( secondArray, wholeList, sizeof(*Hypercube)*N, cudaMemcpyHostToDevice);
+		
+		if(errCode != cudaSuccess)
+		{
+		printf("\nLast error: %d\n", errCode); 	
+		}
+		
+		//setup blocks
+		const unsigned int totalBlocks=ceil(cubes);
+		printf("\ntotal blocks: %d",totalBlocks);
 			
+		//initiate kernel
+		combineCubes<<<totalBlocks,1024>>>(arrays, secondArray, N, cubes);
+		
+		if(errCode != cudaSuccess){
+		cout<<"Error afrer kernel launch "<<errCode<<endl;
+		
+		}
+		
+		//copy the array from gpu
+		errCode=cudaMemcpy( sortArray, secondArray, sizeof(*Hypercube)*cubes, cudaMemcpyDeviceToHost);
+		if(errCode != cudaSuccess) {
+		cout << "\nError: getting result form GPU error with code " << errCode << endl; 
+		}
+
 		sortCube(array, sortArray, N, cubes);
 		free(array);
 	
