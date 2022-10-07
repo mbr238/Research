@@ -55,16 +55,12 @@ bool compare( int *coordsOne, int *coordsTwo)
 }
 
 
-void combineCubes(Hypercube **array,  Hypercube **wholeList, int N, int cubes)
+__global__ void combineCubes(Hypercube **array,  Hypercube **wholeList, int N, int cubes)
 {
 	//initialize variables
-	omp_set_num_threads(NTHREADS);
 	int countings = 0;
-	
+
 	//processing
-	#pragma omp parallel
-	{
-		#pragma omp for
 		for(int index = 0; index < cubes; index++)
 		{
 			countings = array[index]->countings;
@@ -79,10 +75,9 @@ void combineCubes(Hypercube **array,  Hypercube **wholeList, int N, int cubes)
 		array[index]->countings = countings;
 		
 		}
-		
-	}
 	//return nothing void
 }
+		
 		
 		
 		
