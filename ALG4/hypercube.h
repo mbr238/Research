@@ -21,62 +21,6 @@ typedef struct Hypercube{
 	
 }Hypercube;
 
-bool similarCube(Hypercube *F, Hypercube *H)
-{
-	for(int i = 0; i < DIM; i++)
-	{
-		if(abs(H->coords[i] - F->coords[i]) != 0)
-		{
-			return false;
-		}	
-	}
-	return true;
-}
-
-
-bool compare( int *coordsOne, int *coordsTwo)
-{
-	int coordOne = 0, coordTwo = 0;
-	for(int i = 0; i < DIM - 1; i++)
-	{
-		coordOne += coordsOne[i];
-		coordTwo += coordsTwo[i];
-		
-	}
-	
-	if(coordOne == coordTwo)
-	{
-		return true;
-	}
-	else
-	{
-		return false;
-	}
-}
-
-
-__global__ void combineCubes(Hypercube **array,  Hypercube **wholeList, int N, int cubes)
-{
-	//initialize variables
-	int countings = 0;
-
-	//processing
-		for(int index = 0; index < cubes; index++)
-		{
-			countings = array[index]->countings;
-			
-			for(int i = 0; i < N; i++)
-			{
-				if(similarCube(array[index], wholeList[i]))
-				{
-					countings++;
-				}
-			}
-		array[index]->countings = countings;
-		
-		}
-	//return nothing void
-}
 		
 		
 		
