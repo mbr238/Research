@@ -11,6 +11,9 @@
 
 
 //prototypes
+
+__global__ void combineCubes(Hypercube **array,  Hypercube **wholeList, int N, int cubes);
+
 DTYPE myScore(DTYPE density, DTYPE densityMax)
 {
 	
@@ -133,7 +136,41 @@ int HYsortOD(DTYPE *outlierArray, DTYPE **dataset, Hypercube **array, int N, int
 }
 
 
+bool similarCube(Hypercube *F, Hypercube *H)
+{
+	for(int i = 0; i < DIM; i++)
+	{
+		if(abs(H->coords[i] - F->coords[i]) != 0)
+		{
+			return false;
+		}	
+	}
+	return true;
+}
 
+
+__global__ void combineCubes(Hypercube **array,  Hypercube **wholeList, int N, int cubes)
+{
+	//initialize variables
+	int countings = 0;
+
+	//processing
+		for(int index = 0; index < cubes; index++)
+		{
+			countings = array[index]->countings;
+			
+			for(int i = 0; i < N; i++)
+			{
+				if(similarCube(array[index], wholeList[i]))
+				{
+					countings++;
+				}
+			}
+		array[index]->countings = countings;
+		
+		}
+	//return nothing void
+}
 
 
 
