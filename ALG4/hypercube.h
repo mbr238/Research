@@ -73,7 +73,7 @@ int create_Hypercubes(DTYPE **dataset, int b, int N, Hypercube **array, Hypercub
 				}				
 				}	
 				
-			Hypercube *newCube = malloc(sizeof(Hypercube*));
+			Hypercube *newCube = (Hypercube*)malloc(sizeof(Hypercube*));
 
 				
 			//add the values to the hypercube
