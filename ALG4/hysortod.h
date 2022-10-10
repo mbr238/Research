@@ -13,6 +13,8 @@
 //prototypes
 void warmUpGPU();
 __global__ void combineCubes(Hypercube **array,  Hypercube **wholeList, int N, int cubes);
+__device__ bool similarCube(Hypercube *F, Hypercube *H);
+
 
 DTYPE myScore(DTYPE density, DTYPE densityMax)
 {
@@ -54,11 +56,11 @@ int HYsortOD(DTYPE *outlierArray, DTYPE **dataset, Hypercube **array, int N, int
 		{
 		outlierArray[i] = 0.0;
 		}
-		Hypercube **wholeList = (Hypercube**)malloc(sizeof(Hypercube)*N);	
+		Hypercube **wholeList = (Hypercube**)malloc(sizeof(Hypercube*)*N);	
 		
 		//create the hypercubes
 		cubes = create_Hypercubes( dataset, b, N, array, wholeList);
-		Hypercube **sortArray = (Hypercube**)malloc(sizeof(Hypercube)*cubes);
+		Hypercube **sortArray = (Hypercube**)malloc(sizeof(Hypercube*)*cubes);
 		
 		//create cuda arrays
 		Hypercube **arrays = NULL, **secondArray = NULL;
@@ -70,12 +72,25 @@ int HYsortOD(DTYPE *outlierArray, DTYPE **dataset, Hypercube **array, int N, int
 		cudaError_t errCode=cudaSuccess;
 		
 		//allocate cuda memory
-		errCode=cudaMalloc((Hypercube**)&arrays, sizeof(Hypercube)*cubes);
-		errCode=cudaMalloc((Hypercube**)&secondArray, sizeof(Hypercube)*N);
-		
+		errCode=cudaMalloc((Hypercube**)&arrays, sizeof(Hypercube*)*cubes);
+		if(errCode != cudaSuccess)
+		{
+		printf("\nLast error: %d\n", errCode);
+		}
+
+		errCode=cudaMalloc((Hypercube**)&secondArray, sizeof(Hypercube*)*N);
+		if(errCode != cudaSuccess)
+		{
+		printf("\nLast error: %d\n",errCode);
+		}
+
 		//copy over datasets
-		errCode=cudaMemcpy( arrays, array, sizeof(Hypercube)*cubes, cudaMemcpyHostToDevice);
-		errCode=cudaMemcpy( secondArray, wholeList, sizeof(Hypercube)*N, cudaMemcpyHostToDevice);
+		errCode=cudaMemcpy( arrays, array, sizeof(Hypercube*)*cubes, cudaMemcpyHostToDevice);
+		if(errCode != cudaSuccess)
+		{
+		printf("\nLast error: %d\n",errCode);
+		}
+		errCode=cudaMemcpy( secondArray, wholeList, sizeof(Hypercube*)*N, cudaMemcpyHostToDevice);
 		
 		if(errCode != cudaSuccess)
 		{
@@ -84,26 +99,25 @@ int HYsortOD(DTYPE *outlierArray, DTYPE **dataset, Hypercube **array, int N, int
 		
 		//setup blocks
 		const unsigned int totalBlocks=ceil(cubes);
-		printf("\ntotal blocks: %d",totalBlocks);
+		printf("\ntotal blocks: %d\n",totalBlocks);
 			
 		//initiate kernel
 		combineCubes<<<totalBlocks,1024>>>(arrays, secondArray, N, cubes);
 		
 		if(errCode != cudaSuccess){
-		printf("Error code %d\n",errCode);
+		printf("Error code 1 %d\n",errCode);
 		
 		}
 		
 		//copy the array from gpu
-		errCode=cudaMemcpy( sortArray, secondArray, sizeof(*Hypercube)*cubes, cudaMemcpyDeviceToHost);
+		errCode=cudaMemcpy( array, secondArray, sizeof(Hypercube*)*cubes, cudaMemcpyDeviceToHost);
 		if(errCode != cudaSuccess) {
-		printf("Error code %d\n",errCode);
+		printf("Error code 2 %d\n",errCode);
 		}
 
 		sortCube(array, sortArray, N, cubes);
 		free(array);
 	
-		combineCubes(sortArray, wholeList, N, cubes);		
 		sort(sortArray, cubes);		
 		
 		//create an empty density array W
@@ -141,11 +155,11 @@ int HYsortOD(DTYPE *outlierArray, DTYPE **dataset, Hypercube **array, int N, int
 }
 
 
-bool similarCube(Hypercube *F, Hypercube *H)
+__device__ bool similarCube(Hypercube *F, Hypercube *H)
 {
 	for(int i = 0; i < DIM; i++)
 	{
-		if(abs(H.coords[i] - F.coords[i]) != 0)
+		if(abs(H->coords[i] - F->coords[i]) != 0)
 		{
 			return false;
 		}	
@@ -178,7 +192,6 @@ __global__ void combineCubes(Hypercube **array,  Hypercube **wholeList, int N, i
 }
 
 void warmUpGPU(){
-
 
 printf("\nWarming up GPU for time trialing...\n");	
 cudaDeviceSynchronize();
