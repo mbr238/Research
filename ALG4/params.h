@@ -2,7 +2,7 @@
 #define PARAMS_H
 
 #define DTYPE double
-#define DIM 2
+#define DIM 4
 
 
 
