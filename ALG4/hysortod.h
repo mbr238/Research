@@ -7,14 +7,13 @@
 #include "params.h"
 #include <math.h>
 #include "sort.h"
-
+#include <cuda.h>
 
 
 //prototypes
 void warmUpGPU();
-__global__ void combineCubes(Hypercube **array,  Hypercube **wholeList, int N, int cubes);
-__device__ bool similarCube(Hypercube *F, Hypercube *H);
-
+__global__ void combineCubes(Hypercube *array,  Hypercube *wholeList, int N, int cubes);
+__device__ bool similarCube(int *F, int *H);
 
 DTYPE myScore(DTYPE density, DTYPE densityMax)
 {
@@ -56,70 +55,71 @@ int HYsortOD(DTYPE *outlierArray, DTYPE **dataset, Hypercube **array, int N, int
 		{
 		outlierArray[i] = 0.0;
 		}
-		Hypercube **wholeList = (Hypercube**)malloc(sizeof(Hypercube*)*N);	
-		
+		Hypercube **wholeList = (Hypercube**)malloc(sizeof(Hypercube*)*N);
+
 		//create the hypercubes
 		cubes = create_Hypercubes( dataset, b, N, array, wholeList);
 		Hypercube **sortArray = (Hypercube**)malloc(sizeof(Hypercube*)*cubes);
-		
+		sortCube(array, sortArray, N, cubes);
+                free(array);
+
 		//create cuda arrays
-		Hypercube **arrays = NULL, **secondArray = NULL;
-		
+		Hypercube *firstArray;
+		Hypercube *secondArray, *sortArrays = (Hypercube*)malloc(sizeof(Hypercube*)*cubes);
+
 		//warm up gpus
 		warmUpGPU();
-		
+
 		//calculate cuda error
 		cudaError_t errCode=cudaSuccess;
-		
-		//allocate cuda memory
-		errCode=cudaMalloc((Hypercube**)&arrays, sizeof(Hypercube*)*cubes);
-		if(errCode != cudaSuccess)
+
+		//allocate cuda memory	
+		cudaMallocManaged(&firstArray,cubes*sizeof(Hypercube));
+		cudaMallocManaged(&secondArray,N*sizeof(Hypercube));
+
+		for(int i = 0; i < cubes; i++)
 		{
-		printf("\nLast error: %d\n", errCode);
+		firstArray[i].countings = sortArray[i]->countings;
+		//cudaMallocManaged(&firstArray[i].coords,sizeof(int)*DIM);
+		for(int j = 0; j < DIM; j++)
+		{
+		firstArray[i].coords[j]=sortArray[i]->coords[j];
+		}
 		}
 
-		errCode=cudaMalloc((Hypercube**)&secondArray, sizeof(Hypercube*)*N);
-		if(errCode != cudaSuccess)
+		for(int i = 0; i < N; i++)
 		{
-		printf("\nLast error: %d\n",errCode);
+		//cudaMallocManaged(&secondArray[i].coords,sizeof(int)*DIM);
+		for(int j = 0; j < DIM; j++)
+		{
+			secondArray[i].coords[j] = wholeList[i]->coords[j];
+		}
 		}
 
-		//copy over datasets
-		errCode=cudaMemcpy( arrays, array, sizeof(Hypercube*)*cubes, cudaMemcpyHostToDevice);
-		if(errCode != cudaSuccess)
-		{
-		printf("\nLast error: %d\n",errCode);
-		}
-		errCode=cudaMemcpy( secondArray, wholeList, sizeof(Hypercube*)*N, cudaMemcpyHostToDevice);
-		
-		if(errCode != cudaSuccess)
-		{
-		printf("\nLast error: %d\n", errCode); 	
-		}
-		
 		//setup blocks
 		const unsigned int totalBlocks=ceil(cubes);
 		printf("\ntotal blocks: %d\n",totalBlocks);
-			
+
 		//initiate kernel
-		combineCubes<<<totalBlocks,1024>>>(arrays, secondArray, N, cubes);
-		
+		combineCubes<<<totalBlocks,1024>>>(firstArray, secondArray, N, cubes);
+
 		if(errCode != cudaSuccess){
 		printf("Error code 1 %d\n",errCode);
-		
-		}
-		
-		//copy the array from gpu
-		errCode=cudaMemcpy( array, secondArray, sizeof(Hypercube*)*cubes, cudaMemcpyDeviceToHost);
-		if(errCode != cudaSuccess) {
-		printf("Error code 2 %d\n",errCode);
+
 		}
 
-		sortCube(array, sortArray, N, cubes);
-		free(array);
-	
-		sort(sortArray, cubes);		
-		
+		//copy the array from gpu
+		sortArrays = firstArray;
+
+		for(int i = 0; i < cubes; i++)
+		{
+		printf("[%d]\n",firstArray[i].countings);
+		}
+
+		//deallocate device memory
+		cudaFree(firstArray);
+		cudaFree(secondArray);
+
 		//create an empty density array W
 		DTYPE *W = (DTYPE*)malloc(sizeof(DTYPE*)*cubes);
 	    
@@ -155,45 +155,44 @@ int HYsortOD(DTYPE *outlierArray, DTYPE **dataset, Hypercube **array, int N, int
 }
 
 
-__device__ bool similarCube(Hypercube *F, Hypercube *H)
+__device__ bool similarCube(int *F, int *H)
 {
-	for(int i = 0; i < DIM; i++)
+	for(int i = 0; i < DIM - 1; i++)
 	{
-		if(abs(H->coords[i] - F->coords[i]) != 0)
+		if(abs(F[i] - H[i]) != 0)
 		{
 			return false;
-		}	
+		}
 	}
 	return true;
 }
 
 
-__global__ void combineCubes(Hypercube **array,  Hypercube **wholeList, int N, int cubes)
+__global__ void combineCubes(Hypercube *arrayOne,  Hypercube *arrayTwo, int N, int cubes)
 {
 	//initialize variables
-	int countings = 0;
-
+        int tid = threadIdx.x+(blockIdx.x*blockDim.x);
+	
 	//processing
-		for(int index = 0; index < cubes; index++)
-		{
-			countings = array[index]->countings;
-			
-			for(int i = 0; i < N; i++)
-			{
-				if(similarCube(array[index], wholeList[i]))
-				{
-					countings++;
-				}
-			}
-		array[index]->countings = countings;
-		
-		}
-	//return nothing void
+	for(int i = 0; i < cubes; i++)
+	{
+	if(tid >= N)
+	{
+	return;
+	}
+	for(int j = 0; j < N; j++)
+	{
+	if(similarCube(arrayOne[i].coords, arrayTwo[tid].coords))
+	{
+	arrayOne[i].countings= 10000;
+	}
+	}
+	}
+	return;
 }
 
 void warmUpGPU(){
-
-printf("\nWarming up GPU for time trialing...\n");	
+	
 cudaDeviceSynchronize();
 
 return;
