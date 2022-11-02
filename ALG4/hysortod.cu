@@ -7,7 +7,6 @@
 
 
 //prototypes
-
 DTYPE getMax(DTYPE **dataset, int N);
 
 DTYPE getMin(DTYPE **dataset, int N);
@@ -20,7 +19,7 @@ int main(int argc, char **argv)
 	sscanf(argv[1],"%d",&N);	//number of lines in text
 	DTYPE **dataset;
 	char inputFname[500];
-    strcpy(inputFname,argv[2]);	// the file name
+	strcpy(inputFname,argv[2]);	// the file name
 	int cube = 0;
 	
 	//allocate memory for dataset
