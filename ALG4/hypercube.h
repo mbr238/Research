@@ -15,10 +15,11 @@
 
 
 //data structure
+
 typedef struct Hypercube{
-	int coords[DIM];
 	int countings;
-	
+	int coords[DIM];
+
 }Hypercube;
 
 		
@@ -42,7 +43,7 @@ int create_Hypercubes(DTYPE **dataset, int b, int N, Hypercube **array, Hypercub
 		//create a new hypercube based off of values
 		uint64_t initVal = 0;
 		unsigned int tempVals[DIM];
-        unsigned int dim[DIM];
+	        unsigned int dim[DIM];
 		double length = 1.0/b;
 		int cubes = 0, index = 0;	
 		
@@ -89,7 +90,7 @@ int create_Hypercubes(DTYPE **dataset, int b, int N, Hypercube **array, Hypercub
 			wholeList[index] = newCube;	
 			index++;
 			
-			//could sort list later using a paralllel program pulling out unique cubes
+			//could sort list later using a parallel program pulling out unique cubes
 			
 			//check to see if hypercube is uninitialized aka equal to null
 			if(array[initVal] == NULL)
