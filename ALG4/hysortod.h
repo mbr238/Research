@@ -12,7 +12,7 @@
 
 //prototypes
 void warmUpGPU();
-__global__ void combineCubes(Hypercube *array,  Hypercube *wholeList, int N, int cubes);
+__global__ void combineCubes(Hypercube *arrayOne,  Hypercube *arrayTwo, int N, int cubes);
 __device__ bool similarCube(int *F, int *H);
 
 DTYPE myScore(DTYPE density, DTYPE densityMax)
@@ -108,8 +108,7 @@ int HYsortOD(DTYPE *outlierArray, DTYPE **dataset, Hypercube **array, int N, int
 
 		}
 
-		//copy the array from gpu
-		sortArrays = firstArray;
+		cudaDeviceSynchronize();
 
 		for(int i = 0; i < cubes; i++)
 		{
@@ -122,7 +121,7 @@ int HYsortOD(DTYPE *outlierArray, DTYPE **dataset, Hypercube **array, int N, int
 
 		//create an empty density array W
 		DTYPE *W = (DTYPE*)malloc(sizeof(DTYPE*)*cubes);
-	    
+
 		//initialize the density arrayss to 0s
 		for(int i = 0; i < cubes; i++)
 		{
@@ -157,7 +156,7 @@ int HYsortOD(DTYPE *outlierArray, DTYPE **dataset, Hypercube **array, int N, int
 
 __device__ bool similarCube(int *F, int *H)
 {
-	for(int i = 0; i < DIM - 1; i++)
+	for(int i = 0; i < DIM; i++)
 	{
 		if(abs(F[i] - H[i]) != 0)
 		{
@@ -171,23 +170,28 @@ __device__ bool similarCube(int *F, int *H)
 __global__ void combineCubes(Hypercube *arrayOne,  Hypercube *arrayTwo, int N, int cubes)
 {
 	//initialize variables
-        int tid = threadIdx.x+(blockIdx.x*blockDim.x);
-	
+	int tid = threadIdx.x + blockDim.x*blockIdx.x;
+
+	if(tid ==0)
+	{
+	arrayOne[0].countings = 50000;
+	}
+
+/*
+
 	//processing
 	for(int i = 0; i < cubes; i++)
 	{
-	if(tid >= N)
+	if(tid >= cubes)
 	{
 	return;
 	}
-	for(int j = 0; j < N; j++)
-	{
 	if(similarCube(arrayOne[i].coords, arrayTwo[tid].coords))
 	{
-	arrayOne[i].countings= 10000;
+	arrayOne[i].countings = 10000;
 	}
 	}
-	}
+*/
 	return;
 }
 
