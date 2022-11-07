@@ -171,32 +171,26 @@ __global__ void combineCubes(Hypercube *arrayOne,  Hypercube *arrayTwo, int N, i
 {
 	//initialize variables
 	int tid = threadIdx.x + blockDim.x*blockIdx.x;
-
-	if(tid ==0)
-	{
-	arrayOne[0].countings = 50000;
-	}
-
-/*
+	int block = blockIdx.x;
 
 	//processing
-	for(int i = 0; i < cubes; i++)
+
+
+	if(tid < N && block < cubes)
 	{
-	if(tid >= cubes)
+	for(int i = 0; i < N; i++)
 	{
-	return;
-	}
-	if(similarCube(arrayOne[i].coords, arrayTwo[tid].coords))
+	if( similarCube(arrayOne[block].coords,arrayTwo[tid + i].coords))
 	{
-	arrayOne[i].countings = 10000;
+	arrayOne[block].countings++;
 	}
 	}
-*/
+	}
 	return;
 }
 
 void warmUpGPU(){
-	
+
 cudaDeviceSynchronize();
 
 return;
