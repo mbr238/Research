@@ -14,10 +14,11 @@
 void warmUpGPU();
 __global__ void combineCubes(Hypercube *arrayOne,  Hypercube *arrayTwo, int N, int cubes);
 __device__ bool similarCube(int *F, int *H);
+__device__  int atomicAdd(int *address, int val);
 
 DTYPE myScore(DTYPE density, DTYPE densityMax)
 {
-	
+
 	//return the density score
 	return (1.000000 - (density/densityMax));
 }
@@ -26,7 +27,7 @@ DTYPE maxx(DTYPE *W, int bins)
 {
 	//initialize variables
 	DTYPE max = W[0];
-	
+
 	//loop through the array
 	for(int i = 0; i < bins; i++)
 	{
@@ -47,10 +48,10 @@ int HYsortOD(DTYPE *outlierArray, DTYPE **dataset, Hypercube **array, int N, int
 {
 	//initialize program	
 	int cubes = 0;
-	
+
 	//processing
-	
-		//set the outlier array originally to 0s 
+
+		//set the outlier array originally to 0s
 		for(int i = 0; i < N; i++)
 		{
 		outlierArray[i] = 0.0;
@@ -65,7 +66,7 @@ int HYsortOD(DTYPE *outlierArray, DTYPE **dataset, Hypercube **array, int N, int
 
 		//create cuda arrays
 		Hypercube *firstArray;
-		Hypercube *secondArray, *sortArrays = (Hypercube*)malloc(sizeof(Hypercube*)*cubes);
+		Hypercube *secondArray;
 
 		//warm up gpus
 		warmUpGPU();
@@ -108,7 +109,11 @@ int HYsortOD(DTYPE *outlierArray, DTYPE **dataset, Hypercube **array, int N, int
 
 		}
 
-		cudaDeviceSynchronize();
+		errCode = cudaDeviceSynchronize();
+		if(errCode != cudaSuccess)
+		{
+		printf("Error code at synchronize %d\n",errCode);
+		}
 
 		for(int i = 0; i < cubes; i++)
 		{
@@ -116,7 +121,6 @@ int HYsortOD(DTYPE *outlierArray, DTYPE **dataset, Hypercube **array, int N, int
 		}
 
 		//deallocate device memory
-		cudaFree(firstArray);
 		cudaFree(secondArray);
 
 		//create an empty density array W
@@ -127,28 +131,27 @@ int HYsortOD(DTYPE *outlierArray, DTYPE **dataset, Hypercube **array, int N, int
 		{
 				W[i] = 0.0;
 		}
-		
-		
+
 		//calculate neighborhood densities
-		neighborhood_density(sortArray, cubes, W);
-		
-	
+		neighborhood_density(firstArray, cubes, W);
+
 		//calclate the largest density value
 		DTYPE Wmax = maxx(W, cubes);
-		
+
 		//for reach datapoint within the dataset
 			for(int index = 0; index < cubes; index++)
 			{
-		
+
 			//calculate the score for that datapoint within hypercubes
 			outlierArray[index] = myScore(W[index], Wmax);
-			
+
 			}
-			
+
 		//end for
 		free(W);
 		free(sortArray);
-		
+		cudaFree(firstArray);
+
 		return cubes;
 		//end program
 }
@@ -170,26 +173,25 @@ __device__ bool similarCube(int *F, int *H)
 __global__ void combineCubes(Hypercube *arrayOne,  Hypercube *arrayTwo, int N, int cubes)
 {
 	//initialize variables
-	int tid = threadIdx.x + blockDim.x*blockIdx.x;
-	int block = blockIdx.x;
+	int tid = threadIdx.x + blockIdx.x * blockDim.x;
+	int blocks = 0;
 
 	//processing
-
-
-	if(tid < N && block < cubes)
+	if(tid < N)
 	{
-	for(int i = 0; i < N; i++)
+	for(blocks = 0; blocks < cubes; blocks++)
 	{
-	if( similarCube(arrayOne[block].coords,arrayTwo[tid + i].coords))
-	{
-	arrayOne[block].countings++;
-	}
+		if(similarCube(arrayOne[blocks].coords,arrayTwo[tid].coords))
+		{
+		atomicAdd(&arrayOne[blocks].countings,1);
+		}
 	}
 	}
 	return;
 }
 
 void warmUpGPU(){
+
 
 cudaDeviceSynchronize();
 
