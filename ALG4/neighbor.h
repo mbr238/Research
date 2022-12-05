@@ -9,7 +9,7 @@
 #include "hypercube.h"
 #include "omp.h"
 
-bool isProspective(int *H, int *F)
+__device__ bool isProspective(int *H, int *F)
 {
 	return (abs(H[0] - F[0]) <= 1);
 	
@@ -18,7 +18,7 @@ bool isProspective(int *H, int *F)
 
 
 //function to calculate neighboring hypercubes
-bool isImmediate(int *H, int *F)
+__device__ bool isImmediate(int *H, int *F)
 {
 	//initialize varaibles
 
@@ -34,43 +34,47 @@ bool isImmediate(int *H, int *F)
 }
 
 
-void neighborhood_density(Hypercube *array, int N, DTYPE *W)
+__global__ void neighborhood_density(Hypercube *array, int N, int *W)
 {
 	//initialize program
-	
+	int tid = threadIdx.x + (blockIdx.x*blockDim.x);
 	//processing
 			//traverse the hypercube array
+			if(tid < N)
+			{
 			for(int i = 0; i < N; i++)
 			{
 				W[i] = array[i].countings;
-				
-				for(int k = i - 1; k >= 0; k--)
-				{
-					if(!isProspective(array[i].coords,array[k].coords))
+
+				//for(int k = i - 1; k >= 0; k--)
+				//{
+					if(i > 1)
 					{
-						break;
+					if(!isProspective(array[i].coords,array[N - tid - 1].coords))
+					{
+						return;
 					}
-					if(isImmediate(array[i].coords,array[k].coords))
+					if(isImmediate(array[i].coords,array[N - tid - 1].coords))
 					{
-						W[i] += array[k].countings;
-					}	
-				}	
-				
-				for(int k = i + 1; k < N; k++)
-				{
-					if(!isProspective(array[i].coords,array[k].coords))
-					{
-						break;
-					}
-					if(isImmediate(array[i].coords,array[k].coords))
-					{
-						W[i] += array[k].countings;
+						atomicAdd(&W[i], array[N - tid - 1].countings);
 					}
 					}
-					
-				
-				}
-			
+
+				//}
+				//for(int k = i + 1; k < N; k++)
+				//{
+					if(!isProspective(array[i].coords,array[tid].coords))
+					{
+						return;
+					}
+					if(isImmediate(array[i].coords,array[tid].coords))
+					{
+						atomicAdd(&W[i], array[tid].countings);
+					}
+			}
+				//}
+			}
+	return;
 			//end for loop
 	//return the neighborhood density
 
