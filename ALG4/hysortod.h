@@ -16,17 +16,17 @@ __global__ void combineCubes(Hypercube *arrayOne,  Hypercube *arrayTwo, int N, i
 __device__ bool similarCube(int *F, int *H);
 __device__  int atomicAdd(int *address, int val);
 
-DTYPE myScore(DTYPE density, DTYPE densityMax)
+DTYPE myScore(int density, int densityMax)
 {
 
 	//return the density score
-	return (1.000000 - (density/densityMax));
+	return (1.000000 - ((double)density/(double)densityMax));
 }
 
-DTYPE maxx(DTYPE *W, int bins)
+int maxx(int *W, int bins)
 {
 	//initialize variables
-	DTYPE max = W[0];
+	int max = W[0];
 
 	//loop through the array
 	for(int i = 0; i < bins; i++)
@@ -98,8 +98,16 @@ int HYsortOD(DTYPE *outlierArray, DTYPE **dataset, Hypercube **array, int N, int
 		}
 
 		//setup blocks
-		const unsigned int totalBlocks=ceil(cubes);
+		unsigned int totalBlocks = 0;
+		if(N >= 1024)
+		{
+		totalBlocks = ceil(N/1024);
 		printf("\ntotal blocks: %d\n",totalBlocks);
+		}
+		else
+		{
+		totalBlocks = ceil(1);
+		}
 
 		//initiate kernel
 		combineCubes<<<totalBlocks,1024>>>(firstArray, secondArray, N, cubes);
@@ -117,26 +125,33 @@ int HYsortOD(DTYPE *outlierArray, DTYPE **dataset, Hypercube **array, int N, int
 
 		for(int i = 0; i < cubes; i++)
 		{
-		printf("[%d]\n",firstArray[i].countings);
+		printf("[%d]\n\n",firstArray[i].countings);
 		}
 
 		//deallocate device memory
 		cudaFree(secondArray);
 
 		//create an empty density array W
-		DTYPE *W = (DTYPE*)malloc(sizeof(DTYPE*)*cubes);
+		int *W;
 
-		//initialize the density arrayss to 0s
+		cudaMallocManaged(&W,sizeof(double)*cubes);
+
 		for(int i = 0; i < cubes; i++)
 		{
-				W[i] = 0.0;
+		W[i] = 0;
 		}
 
+
 		//calculate neighborhood densities
-		neighborhood_density(firstArray, cubes, W);
+		neighborhood_density<<<cubes*4,1024>>>(firstArray, cubes, W);
+		cudaDeviceSynchronize();
 
 		//calclate the largest density value
-		DTYPE Wmax = maxx(W, cubes);
+		int Wmax = maxx(W, cubes);
+		for(int i = 0; i < cubes; i++)
+		{
+		printf("%d\n\n",W[i]);
+		}
 
 		//for reach datapoint within the dataset
 			for(int index = 0; index < cubes; index++)
@@ -148,7 +163,7 @@ int HYsortOD(DTYPE *outlierArray, DTYPE **dataset, Hypercube **array, int N, int
 			}
 
 		//end for
-		free(W);
+		cudaFree(W);
 		free(sortArray);
 		cudaFree(firstArray);
 
