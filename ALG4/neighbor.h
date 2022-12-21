@@ -12,7 +12,7 @@
 __device__ bool isProspective(int *H, int *F)
 {
 	return (abs(H[0] - F[0]) <= 1);
-	
+
 }
 
 
@@ -37,18 +37,18 @@ __device__ bool isImmediate(int *H, int *F)
 __global__ void neighborhood_density(Hypercube *array, int N, int *W)
 {
 	//initialize program
-	int tid = threadIdx.x + (blockIdx.x*blockDim.x);
+	int tid = threadIdx.x;// + (blockIdx.x*blockDim.x);
 	//processing
 			//traverse the hypercube array
 			if(tid < N)
 			{
-			for(int i = 0; i < N; i++)
-			{
-				W[i] = array[i].countings;
+			//for(int i = 0; i < N; i++)
+			//{
+				W[tid] = array[tid].countings;
 
 				//for(int k = i - 1; k >= 0; k--)
 				//{
-					if(i > 1)
+					/*if(i > 1)
 					{
 					if(!isProspective(array[i].coords,array[N - tid - 1].coords))
 					{
@@ -71,9 +71,15 @@ __global__ void neighborhood_density(Hypercube *array, int N, int *W)
 					{
 						atomicAdd(&W[i], array[tid].countings);
 					}
+			}*/
+			if(isImmediate(array[tid].coords,array[tid].coords) && array[tid].loc != array[tid].loc)
+			{
+			atomicAdd(&W[tid], array[tid].countings);
+			return;
+			}
 			}
 				//}
-			}
+			//}
 	return;
 			//end for loop
 	//return the neighborhood density
