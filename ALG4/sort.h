@@ -39,9 +39,9 @@ void sort(Hypercube **array, int N)
 					swap(array, i, j);
 				}
 			}
-		
+
 		}
-	
+
 }
 
 
@@ -53,7 +53,7 @@ void sortCube(Hypercube **array, Hypercube **sortArray, int N, int cubes)
 	int index = 0;
 	int cubeIndex = 0;
 	int cube = 0;
-	
+
 	for(cubeIndex = 0; cubeIndex < N; cubeIndex++)
 	{
 		if(array[cubeIndex] == NULL)
