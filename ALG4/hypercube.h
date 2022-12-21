@@ -19,7 +19,7 @@
 typedef struct Hypercube{
 	int countings;
 	int coords[DIM];
-
+	int loc;
 }Hypercube;
 
 		
