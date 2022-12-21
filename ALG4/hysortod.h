@@ -98,16 +98,7 @@ int HYsortOD(DTYPE *outlierArray, DTYPE **dataset, Hypercube **array, int N, int
 		}
 
 		//setup blocks
-		unsigned int totalBlocks = 0;
-		if(N >= 1024)
-		{
-		totalBlocks = ceil(N/1024);
-		printf("\ntotal blocks: %d\n",totalBlocks);
-		}
-		else
-		{
-		totalBlocks = ceil(1);
-		}
+		unsigned int totalBlocks = ceil((float)N/(float)1024);
 
 		//initiate kernel
 		combineCubes<<<totalBlocks,1024>>>(firstArray, secondArray, N, cubes);
@@ -126,6 +117,7 @@ int HYsortOD(DTYPE *outlierArray, DTYPE **dataset, Hypercube **array, int N, int
 		for(int i = 0; i < cubes; i++)
 		{
 		printf("[%d]\n\n",firstArray[i].countings);
+		firstArray[i].loc = i;
 		}
 
 		//deallocate device memory
@@ -143,7 +135,8 @@ int HYsortOD(DTYPE *outlierArray, DTYPE **dataset, Hypercube **array, int N, int
 
 
 		//calculate neighborhood densities
-		neighborhood_density<<<cubes*4,1024>>>(firstArray, cubes, W);
+		totalBlocks = (float)cubes / (float)1024;
+		neighborhood_density<<<15,1024>>>(firstArray, cubes, W);
 		cudaDeviceSynchronize();
 
 		//calclate the largest density value
