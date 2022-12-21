@@ -135,8 +135,8 @@ int HYsortOD(DTYPE *outlierArray, DTYPE **dataset, Hypercube **array, int N, int
 
 
 		//calculate neighborhood densities
-		totalBlocks = (float)cubes / (float)1024;
-		neighborhood_density<<<15,1024>>>(firstArray, cubes, W);
+		totalBlocks = ceil((float)cubes / (float)1024);
+		neighborhood_density<<<totalBlocks,1024>>>(firstArray, cubes, W);
 		cudaDeviceSynchronize();
 
 		//calclate the largest density value
