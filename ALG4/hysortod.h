@@ -74,7 +74,7 @@ int HYsortOD(DTYPE *outlierArray, DTYPE **dataset, Hypercube **array, int N, int
 		//calculate cuda error
 		cudaError_t errCode=cudaSuccess;
 
-		//allocate cuda memory	
+		//allocate cuda memory
 		cudaMallocManaged(&firstArray,cubes*sizeof(Hypercube));
 		cudaMallocManaged(&secondArray,N*sizeof(Hypercube));
 
@@ -116,12 +116,9 @@ int HYsortOD(DTYPE *outlierArray, DTYPE **dataset, Hypercube **array, int N, int
 
 		for(int i = 0; i < cubes; i++)
 		{
-		printf("[%d]\n\n",firstArray[i].countings);
+		printf("Before [%d]\n",firstArray[i].countings);
 		firstArray[i].loc = i;
 		}
-
-		//deallocate device memory
-		cudaFree(secondArray);
 
 		//create an empty density array W
 		int *W;
@@ -130,20 +127,23 @@ int HYsortOD(DTYPE *outlierArray, DTYPE **dataset, Hypercube **array, int N, int
 
 		for(int i = 0; i < cubes; i++)
 		{
-		W[i] = 0;
+		W[i] = firstArray[i].countings;
 		}
+		secondArray = firstArray;
 
+		cudaDeviceSynchronize();
 
 		//calculate neighborhood densities
 		totalBlocks = ceil((float)cubes / (float)1024);
-		neighborhood_density<<<totalBlocks,1024>>>(firstArray, cubes, W);
+		neighborhood_density<<<totalBlocks,1024>>>(firstArray, secondArray, cubes, W);
 		cudaDeviceSynchronize();
 
 		//calclate the largest density value
 		int Wmax = maxx(W, cubes);
 		for(int i = 0; i < cubes; i++)
 		{
-		printf("%d\n\n",W[i]);
+		printf("After %d|",W[i]);
+		printf("[%d][%d][%d]\n",firstArray[i].coords[0],firstArray[i].coords[1],firstArray[i].coords[2]);
 		}
 
 		//for reach datapoint within the dataset
@@ -181,7 +181,7 @@ __device__ bool similarCube(int *F, int *H)
 __global__ void combineCubes(Hypercube *arrayOne,  Hypercube *arrayTwo, int N, int cubes)
 {
 	//initialize variables
-	int tid = threadIdx.x + blockIdx.x * blockDim.x;
+	unsigned int tid = threadIdx.x + blockIdx.x * blockDim.x;
 	int blocks = 0;
 
 	//processing
