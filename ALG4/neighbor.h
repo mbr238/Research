@@ -7,7 +7,7 @@
 #include <stdbool.h>
 #include "params.h"
 #include "hypercube.h"
-#include "omp.h"
+#include "cuda.h"
 
 __device__ bool isProspective(int *H, int *F)
 {
@@ -34,17 +34,17 @@ __device__ bool isImmediate(int *H, int *F)
 }
 
 
-__global__ void neighborhood_density(Hypercube *array, int N, int *W)
+__global__ void neighborhood_density(Hypercube *array, Hypercube *arrayTwo, int N, int *W)
 {
 	//initialize program
-	int tid = threadIdx.x;// + (blockIdx.x*blockDim.x);
+	int tid = threadIdx.x + (blockIdx.x*blockDim.x);
 	//processing
 			//traverse the hypercube array
 			if(tid < N)
 			{
 			//for(int i = 0; i < N; i++)
 			//{
-				W[tid] = array[tid].countings;
+				//W[tid] = array[tid].countings;
 
 				//for(int k = i - 1; k >= 0; k--)
 				//{
@@ -70,12 +70,14 @@ __global__ void neighborhood_density(Hypercube *array, int N, int *W)
 					if(isImmediate(array[i].coords,array[tid].coords))
 					{
 						atomicAdd(&W[i], array[tid].countings);
-					}
-			}*/
-			if(isImmediate(array[tid].coords,array[tid].coords) && array[tid].loc != array[tid].loc)
+					} */
+
+			for(int i = 0; i < N; i++)
 			{
-			atomicAdd(&W[tid], array[tid].countings);
-			return;
+			if(isImmediate(array[i].coords,arrayTwo[tid].coords) && array[i].loc != arrayTwo[tid].loc)
+			{
+			atomicAdd(&W[i], arrayTwo[tid].countings);
+			}
 			}
 			}
 				//}
