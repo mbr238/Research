@@ -20,12 +20,14 @@ typedef struct Hypercube{
 	int countings;
 	int coords[DIM];
 	int loc;
+	uint64_t location;
 }Hypercube;
 
-		
-		
-		
-		
+
+//prototypes
+int getUniques(Hypercube **array, Hypercube **wholeList, int N);
+
+
 uint64_t getLinearID(unsigned int * indexes, unsigned int * dimLen, unsigned int nDimensions) {
     uint64_t offset = 0;
 	uint64_t multiplier = 1;
@@ -33,7 +35,6 @@ uint64_t getLinearID(unsigned int * indexes, unsigned int * dimLen, unsigned int
   	offset += (uint64_t)indexes[i] * multiplier;
   	multiplier *= dimLen[i];
 	}
-	
 	return offset;
 }
 
@@ -45,23 +46,22 @@ int create_Hypercubes(DTYPE **dataset, int b, int N, Hypercube **array, Hypercub
 		unsigned int tempVals[DIM];
 	        unsigned int dim[DIM];
 		double length = 1.0/b;
-		int cubes = 0, index = 0;	
-		
+		int cubes = 0, index = 0;
+
 		for(int k = 0; k < N; k++)
 		{
 			array[k] = NULL;
 			wholeList[k] = NULL;
 		}
-		
+
 		for(int i = 0; i < DIM; i++)
 		{
 			dim[i] = b;
 		}
-			
-		
+
 	//processing	
 		for(int i = 0; i < N; i++)
-			{		
+			{
 				for(int k = 0; k < DIM; k++)
 				{
 				if( dataset[i][k] < 0 )
@@ -70,41 +70,42 @@ int create_Hypercubes(DTYPE **dataset, int b, int N, Hypercube **array, Hypercub
 				}
 				else
 				{
-				tempVals[k] = (int)(floor(dataset[i][k] / length));	
-				}				
-				}	
-				
+				tempVals[k] = (int)(floor(dataset[i][k] / length));
+				}
+				}
+
 			Hypercube *newCube = (Hypercube*)malloc(sizeof(Hypercube*));
 
-				
 			//add the values to the hypercube
 				for( int i = 0; i < DIM; i++)
 				{
 					newCube->coords[i] = tempVals[i]; 
 				}
-			newCube->countings = 0; 	
-			
-		//check if the dataset we are working with is not negative numbers			
+			newCube->countings = 0;
+
+		//check if the dataset we are working with is not negative numbers
 			initVal = getLinearID( tempVals, dim, DIM); // get loc of cube
-					
-			wholeList[index] = newCube;	
+
+			newCube.location = initVal;
+			wholeList[index] = newCube;
 			index++;
-			
+
 			//could sort list later using a parallel program pulling out unique cubes
-			
+
 			//check to see if hypercube is uninitialized aka equal to null
-			if(array[initVal] == NULL)
+
+			/*if(array[initVal] == NULL)
 				{
 				cubes++;
-				
+
 				//throw cube in array list
 				array[initVal] = newCube;
-				
-				}
-			
+
+				}*/
+
+			free(newCube);
 			}
-			
-			
+	cubes = getUniques(array,wholeList,N);
 	return cubes;
 }
 
@@ -150,7 +151,39 @@ int importDataset(char * fname, int N, DTYPE ** dataset)
 
     fclose(fp);
     return 0;
-
-
 }
+
+bool isInArray(uint64_t loc, Hypercube **array, int N)
+{
+  int index = 0;
+
+  for(index = 0; index < N; index++)
+   {
+   if(loc == array[index]->location)
+   {
+    return true;
+   }
+   }
+  return false;
+}
+
+
+
+int getUniques(Hypercube ** array, Hypercube ** wholeList, int N) {
+    int index = 0, arrayIndex = 1;
+
+    array[arrayIndex] = wholeList[index];
+
+   for(index = 0; index < N; index++)
+   {
+    if(!isInArray(wholeList[index]->location,array,arrayIndex))
+	{
+	array[arrayIndex] = wholeList[index];
+	arrayIndex++;
+	}
+   }
+
+	return arrayIndex;
+}
+
 #endif
