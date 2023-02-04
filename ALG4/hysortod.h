@@ -46,7 +46,7 @@ int maxx(int *W, int bins)
 											//same size as dataset -- outlierarray
 int HYsortOD(DTYPE *outlierArray, DTYPE **dataset, Hypercube **array, int N, int b)
 {
-	//initialize program	
+	//initialize program
 	int cubes = 0;
 
 	//processing
@@ -64,9 +64,11 @@ int HYsortOD(DTYPE *outlierArray, DTYPE **dataset, Hypercube **array, int N, int
 		sortCube(array, sortArray, N, cubes);
                 free(array);
 
+
 		//create cuda arrays
 		Hypercube *firstArray;
 		Hypercube *secondArray;
+
 
 		//warm up gpus
 		warmUpGPU();
@@ -78,19 +80,19 @@ int HYsortOD(DTYPE *outlierArray, DTYPE **dataset, Hypercube **array, int N, int
 		cudaMallocManaged(&firstArray,cubes*sizeof(Hypercube));
 		cudaMallocManaged(&secondArray,N*sizeof(Hypercube));
 
+		//add the values to the cuda arrays
 		for(int i = 0; i < cubes; i++)
 		{
 		firstArray[i].countings = sortArray[i]->countings;
-		//cudaMallocManaged(&firstArray[i].coords,sizeof(int)*DIM);
 		for(int j = 0; j < DIM; j++)
 		{
 		firstArray[i].coords[j]=sortArray[i]->coords[j];
 		}
 		}
 
+		//add the coordinants to the device for reference later
 		for(int i = 0; i < N; i++)
 		{
-		//cudaMallocManaged(&secondArray[i].coords,sizeof(int)*DIM);
 		for(int j = 0; j < DIM; j++)
 		{
 			secondArray[i].coords[j] = wholeList[i]->coords[j];
@@ -108,12 +110,14 @@ int HYsortOD(DTYPE *outlierArray, DTYPE **dataset, Hypercube **array, int N, int
 
 		}
 
+		//synchronize host and device
 		errCode = cudaDeviceSynchronize();
 		if(errCode != cudaSuccess)
 		{
 		printf("Error code at synchronize %d\n",errCode);
 		}
 
+		//add the location to the unique cubes after combine funct
 		for(int i = 0; i < cubes; i++)
 		{
 		printf("Before [%d]\n",firstArray[i].countings);
@@ -123,14 +127,19 @@ int HYsortOD(DTYPE *outlierArray, DTYPE **dataset, Hypercube **array, int N, int
 		//create an empty density array W
 		int *W;
 
+		//set up the density aray on the device
 		cudaMallocManaged(&W,sizeof(double)*cubes);
 
+		//add the density to each of the individual cubes
 		for(int i = 0; i < cubes; i++)
 		{
 		W[i] = firstArray[i].countings;
 		}
+
+		//make the second array be the first array
 		secondArray = firstArray;
 
+		//synchronize host and device
 		cudaDeviceSynchronize();
 
 		//calculate neighborhood densities
@@ -155,10 +164,11 @@ int HYsortOD(DTYPE *outlierArray, DTYPE **dataset, Hypercube **array, int N, int
 
 			}
 
-		//end for
+		//end for and free arrays
 		cudaFree(W);
 		free(sortArray);
 		cudaFree(firstArray);
+		cudaFree(secondArray);
 
 		return cubes;
 		//end program
