@@ -1,3 +1,4 @@
+
 //header files
 #include "hysortod.h"
 #include "params.h"
@@ -21,25 +22,24 @@ int main(int argc, char **argv)
 	char inputFname[500];
 	strcpy(inputFname,argv[2]);	// the file name
 	int cube = 0;
-	
+
 	//allocate memory for dataset
 	dataset=(DTYPE**)malloc(sizeof(DTYPE*)*N);
 	for (int i=0; i<N; i++)
 	{
 	dataset[i]=(DTYPE*)malloc(sizeof(DTYPE)*DIM);
 	}
-	
+
 	//import the data set
-	importDataset(inputFname, N, dataset);		
-	
+	importDataset(inputFname, N, dataset);
+
 	normalize(dataset, getMax(dataset, N), getMin(dataset,N), N);
-	
+
 	int arrSize = N;
 	DTYPE *outlierArray = (DTYPE*)malloc(sizeof(DTYPE*)*arrSize);
 
 	Hypercube **array = (Hypercube**)malloc(sizeof(Hypercube)*N);
-	
-	
+
 	//initialize array to null initially
  	for(i = 0; i < N; i++)
 	{
@@ -54,7 +54,7 @@ int main(int argc, char **argv)
 	
 	//perform outlier algorithm
 	cube = HYsortOD(outlierArray, dataset, array, N, bins);
-	
+
 	//end timer
 	end = clock();
 	cpu_time_used = ((DTYPE) (end - start)) / CLOCKS_PER_SEC;
